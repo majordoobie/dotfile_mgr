@@ -3,11 +3,15 @@ import json
 from pathlib import Path
 from typing import Optional
 
+# Set paths to static files/folder
 SELF_PATH = Path(__file__).parents[0]
 CONFIG_REPO = SELF_PATH / "config_repo"
 CONFIG_PATH = CONFIG_REPO / "dotfiles.json"
 
+# Set the mandatory dict keys
 ROOT_JSON = "dotfiles"
+DEPLOYMENT_K = "deployment"
+STORAGE_K = "storage"
 
 
 class Deployment:
@@ -29,35 +33,70 @@ def __post_init__(self):
                   f" Skipping processing for {self.name}")
 
 
-def main():
-    args = _get_args()
-    config_file = _get_config()
-
-    _parse_config_file(config_file)
-
-
-def _parse_config_file(config_file: dict) -> None:
+def _get_config(config: Optional[dict]) -> dict:
     """
-    Iterate over the config dictionary and attempt to convert each deployment
-    unit to a Deployment object.
-    :param config_file: Dictionary containing the deployment units
-    :return: None
-    :rtype: None
+    Iterate over the json file to first ensure that the file is VALID.
+    A valid configuration is one that has the root key of `ROOT_JSON`
+    and has at least one `deployment unit` where each `deployment unit`
+    is a list of `deployment objects` each containing at most two keys,
+    the `deployment` path and `storage` path.
+
+    :return: Dictionary containing the configuration for fetching dotfiles
+    :rtype: dict
     """
-    if not config_file.get(ROOT_JSON):
+    if config is None:
+        if not CONFIG_PATH.exists():
+            exit(f"[!] There is no config file available at "
+                 f"{CONFIG_PATH.as_posix()}")
+
+        # read the config json into a dictionary
+        with CONFIG_PATH.open("rt", encoding="utf-8") as handle:
+            config = json.load(handle)
+
+    # First test if the root key is present. If it is not, exit
+    if not config.get(ROOT_JSON):
         exit("[!] INVALID JSON FORMAT: dotfiles.json missing root key "
              f"\"{ROOT_JSON}\" located at {CONFIG_PATH.as_posix()}")
 
-    # Iterate over all the deployment units
-    for deployment, d_units in config_file[ROOT_JSON].items():
-        # Each deployment unit MUST have their own repo path
-        deployment_path = _set_config_repo(deployment)
+    # Next, iterate over the dict and check that each deployment unit
+    # has at least 1 deployment object where each deployment object
+    # has at most two keys, being "DEPLOYMENT" and "STORAGE"
+    for deployment_unit in config[ROOT_JSON].keys():
+        # First test if deployment_unit is a LIST
+        if not isinstance(config[ROOT_JSON][deployment_unit], list):
+            exit(f"[!] {deployment_unit} does not contain a list of "
+                 f"deployment objects")
 
-        # Iterate over each deployment unit for the unit and varify that
-        # the paths exist before creating a deployment object
-        for dotfile in d_units:
-            for unit, paths in dotfile.items():
-                _set_unit_repo(deployment_path, unit)
+        # Check that each deployment unit has at least one deployment object
+        if not config[ROOT_JSON][deployment_unit]:
+            exit(f"[!] Deployment unit {deployment_unit} is empty!")
+
+        # If list, check that each deployment unit only has two keys,
+        # DEPLOYMENT_K and STORAGE_K
+        for deployment_obj in config[ROOT_JSON][deployment_unit]:
+            for obj_name, obj_paths in deployment_obj.items():
+                # First check that there is only two keys
+                if len(obj_paths.keys()) != 2:
+                    exit(f"[!] Deployment obj {deployment_obj} contains"
+                         f"more than two keys")
+
+                # Check for the two mandatory keys
+                if obj_paths.get(DEPLOYMENT_K) is None:
+                    exit(f"[!] {deployment_obj} is missing required key"
+                         f"{DEPLOYMENT_K}")
+                if obj_paths.get(STORAGE_K) is None:
+                    exit(f"[!] {deployment_obj} is missing required key"
+                         f"{STORAGE_K}")
+
+    return config
+
+
+def main():
+    # Get command line arguments
+    args = _get_args()
+
+    # Parse the config to make sure that it is a valid json
+    config_file = _get_config()
 
 
 def _set_unit_repo(deployment_path: Path, unit: str) -> None:
@@ -96,19 +135,6 @@ def _set_config_repo(deployment: str) -> Path:
     return d_path
 
 
-def _get_config() -> Optional[dict]:
-    """
-    Fetches the config file located at the relative fixed path to this script.
-    If the file is not found, then an error will be thrown.
-    :return: Dictionary containing the configuration for fetching dotfiles
-    :rtype: dict
-    """
-    if not CONFIG_PATH.exists():
-        exit(f"[!] There is no config file available at "
-             f"{CONFIG_PATH.as_posix()}")
-
-    with CONFIG_PATH.open("rt", encoding="utf-8") as handle:
-        return json.load(handle)
 
 
 def _get_args() -> argparse.Namespace:

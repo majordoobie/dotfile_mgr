@@ -2,7 +2,7 @@
 
 The fetch_dotfile.py script helps users who use their GitHub as a place to store their 
 dotfiles. What I found with storing my dotfiles on GitHub is that I would often forget 
-where each dotfile goes/came from. So it came a challenge to update my dotfile repo. 
+where each dotfile goes/came from. So it became a challenge to update my dotfile repo. 
 Additionally, when it came to pushing my configs onto a new system, I would forget 
 where each file goes. Did they go in `~/` or did they go in common `~/.config/` folder?
 
@@ -12,9 +12,10 @@ for its configuration.
 
 The json file is stored in the `config_repo` directory which is ALWAYS relative to the
 script itself. This name cannot be changed, it will be created for you. Inside this
-folder is where each `deployment unit` will be stored. A `deployment unit` is a group
-of configuration s that belong to one entity. For example, my `alacritty` configuration
-has 3 total files. The `alacritty.yml` plus two color scheme yml files. These three
+folder is where each `deployment unit` will be stored. 
+
+A `deployment unit` is a group of configuration s that belong to one entity. For example, 
+my `alacritty` configuration has 3 total files. The `alacritty.yml` plus two color scheme yml files. These three
 files are considered one `deployment unit` because they belong to `alacritty`. A 
 `deployment unit` contains at least one `deployment object`. A `deployment object` 
 is a pair of directory values, the `deployment` path and `storage` path. 
@@ -43,6 +44,8 @@ Example:
   }
 }
 ```
+
+The example above shows 1 `deployment unit` **alacritty** containing two `deployment objects` **alacritty_conf** and **alacritty_scheme_gruvbox**
 
 By using `${D_ROOT}` you are allowing the script to store both files above in the `config_repo/alacritty/` 
 directory without you having to worry about where they are. But, you also have the option
