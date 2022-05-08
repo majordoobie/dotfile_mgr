@@ -22,16 +22,24 @@ class Deployment:
     storage_path: Optional[Path]
     valid: bool = False
 
+    def fetch_config(self):
+        print(self)
+
 
 def main():
     # Get command line arguments
     args = _get_args()
 
     # Parse the config to make sure that it is a valid json
-    config_file = _get_config()
+    config_file = _get_config(None)
 
     # Get list of deployment objects
     deployments = _get_deployments(config_file)
+
+    # If fetch
+    if args.fetch_configs:
+        for deployment in deployments:
+            deployment.fetch_config()
 
 
 def _get_config(config: Optional[dict]) -> dict:
@@ -92,14 +100,22 @@ def _get_config(config: Optional[dict]) -> dict:
 
 
 def _get_deployments(config: dict) -> List[Deployment]:
+    """
+    Parse through the dict object and return a list of deployment objects.
+    Each deployment object will have the deployment path and the source
+    path.
+
+    :param config: Dictionary containing the dotfile configuration paths
+    :return: List of deployment objects
+    """
     deployments = []
     for deployment_unit in config[ROOT_JSON].keys():
         for deployment_obj in config[ROOT_JSON][deployment_unit]:
             for obj_name, obj_paths in deployment_obj.items():
                 deployments.append(Deployment(
                         obj_name,
-                        obj_paths.get(DEPLOYMENT_K),
-                        obj_paths.get(STORAGE_K)
+                        Path(obj_paths.get(DEPLOYMENT_K)),
+                        Path(obj_paths.get(STORAGE_K))
                     )
                 )
     return deployments
@@ -139,7 +155,6 @@ def _set_config_repo(deployment: str) -> Path:
     d_path = CONFIG_REPO / f"{deployment}_repo"
     d_path.mkdir(exist_ok=True)
     return d_path
-
 
 
 def _get_args() -> argparse.Namespace:
