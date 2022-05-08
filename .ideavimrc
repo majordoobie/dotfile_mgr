@@ -1,0 +1,122 @@
+" ------ Sources ------
+" https://amine-elhattami.medium.com/destination-ideavim-day-1-the-basics-793a514af57f
+" https://towardsdatascience.com/the-essential-ideavim-remaps-291d4cd3971b
+" https://github.com/JetBrains/ideavim/wiki/%22set%22-commands
+" https://stackoverflow.com/questions/3776117/what-is-the-difference-between-the-remap-noremap-nnoremap-and-vnoremap-mapping
+
+
+" ##################################################################################################
+" ------ Global Changes ------
+" Leaderkey is the spacebar
+let mapleader = " "
+
+" Don't use Ex mode, use Q for formatting.
+map Q gq
+
+" Allow the use of the normal copy buffer
+" set clipboard+=unnamed
+" set clipboard+=ideaput
+
+" This for some reason is needed to allow commands such as CloseAllEditors to work. Something about
+" Allowing vim shortcuts to run over the built in shortcut given
+sethandler <c-k> a:vim
+
+" Quickly reload vimrc
+nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
+
+vnoremap < <gv
+vnoremap > >gv
+
+
+" ##################################################################################################
+" ------ Modify Scrolling Behaviors -------
+" Number of lines to show above and below cursor. Useful for using ctrl + U/D
+set scrolloff=15
+" Set relative paths
+set relativenumber
+" Do incremental searching.
+
+" ##################################################################################################
+" ------ Modify Search Behaviors -------
+set incsearch
+" Highlight search results
+set hlsearch
+" Wrap around the file when searching
+set wrapscan
+" Map the enter key to CLEAR the highlight from the last search
+nnoremap <CR> :noh<CR><CR>
+
+
+" ##################################################################################################
+" ------ Pane Manipulation Behaviors -------
+map <leader>- <Action>(SplitHorizontally)
+map <leader>_ <Action>(SplitVertically)
+
+" Sets hjkl as pane movement keys
+nnoremap <c-h> <c-w>h
+nnoremap <c-l> <c-w>l
+nnoremap <c-j> <c-w>j
+nnoremap <c-k> <c-w>k
+
+" Closing Panes
+map <Leader>q <Action>(CloseContent)
+map <Leader>qa <Action>(CloseAllEditors)
+
+map <leader>z <Action>(ToggleDistractionFreeMode)
+map <leader>t <Action>(ActivateTerminalToolWindow)
+map <leader>d <Action>(ActivateDebugToolWindow)
+
+
+" ##################################################################################################
+" ------ Code Block Behaviors -------
+" Local Region
+map zo <Action>(ExpandRegion)
+map zc <Action>(CollapseRegion)
+
+" File Region
+map <leader>zo <Action>(ExpandAllRegions)
+map <leader>zc <Action>(CollapseAllRegions)
+
+
+" ##################################################################################################
+" ------ Code Editing Behaviors -------
+" Join things together like comments and method chaining. Activated with shift+j
+set ideajoin
+
+" When refactoring, what vim mode should you be in. Visual allows you to quickly delete or esp to edit
+set idearefactormode=visual
+
+" Edit code
+map <Leader>r <Action>(ReformatCode)
+map <leader>o <Action>(OptimizeImports)
+
+" --- "GOTO"
+map gr <Action>(Refactorings.QuickListPopupAction)
+map gf <Action>(GotoFile)
+map gd <Action>(GotoDeclaration)
+map ge <Action>(GotoNextError)
+map gt <Action>(GotoTest)
+map gu <Action>(FindUsages)
+map gl <Action>(Forward)
+map gh <Action>(Back)
+map gs <Action>(FileStructurePopup)
+
+map <leader>rr <Action>(RecentLocations)
+map <leader>l <Action>(LocalHistory.ShowHistory)
+
+" ##################################################################################################
+" ------ Code Execution -------
+map <leader>1 <Action>(Run)
+map <leader>2 <Action>(Debug)
+map <leader>0 <Action>(Stop)
+map <leader>bb <Action>(ToggleLineBreakpoint)
+map <leader>ba <Action>(ViewBreakpoints)
+
+" Find more examples here: https://jb.gg/share-ideavimrc
+
+
+
+
+
+
+

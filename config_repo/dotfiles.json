@@ -1,0 +1,16 @@
+{
+  "dotfiles": {
+    "alacritty": [
+      {
+        "alacritty_conf": {
+          "deployment": "~/.config/alacritty/alacritty.yml",
+          "storage": "${D_ROOT}/alacritty.yml"
+        },
+        "alacritty_scheme_gruvbox": {
+          "deployment": "~/.config/alacritty/color_scheme_gruvbox.yml",
+          "storage": "${D_ROOT}/color_scheme_gruvbox.yml"
+        }
+      }
+    ]
+  }
+}

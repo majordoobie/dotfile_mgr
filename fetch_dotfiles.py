@@ -1,6 +1,5 @@
 import argparse
 import json
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
@@ -11,7 +10,6 @@ CONFIG_PATH = CONFIG_REPO / "dotfiles.json"
 ROOT_JSON = "dotfiles"
 
 
-@dataclass
 class Deployment:
     deployment_name: str
     deployment_path: Path
@@ -86,6 +84,7 @@ def _set_unit_repo(deployment_path: Path, unit: str) -> None:
     u_path = deployment_path / unit
     u_path.mkdir(exist_ok=True)
 
+
 def _set_config_repo(deployment: str) -> Path:
     """
     Create the repo path for each deployemtn
@@ -121,11 +120,11 @@ def _get_args() -> argparse.Namespace:
     """
 
     parser = argparse.ArgumentParser(
-            description="Tool fetches all the configuration files specified "
-                        "in the json file. The destination can be left to "
-                        "None and a the script will automatically name the "
-                        "destination folder."
-            )
+        description="Tool fetches all the configuration files specified in the"
+                    " json file. The destination can be left to "
+                    "None and a the script will automatically name the "
+                    "destination folder."
+    )
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
@@ -148,3 +147,4 @@ def _get_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     main()
+
