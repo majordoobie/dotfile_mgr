@@ -5,7 +5,6 @@ import fetch_dotfiles
 
 class Test(TestCase):
     def setUp(self) -> None:
-
         self.config_empty_unit = {}
 
         self.config_working = {
@@ -82,6 +81,10 @@ class Test(TestCase):
     def test__get_config_working(self):
         """Test a working good dict"""
         fetch_dotfiles._get_config(self.config_working)
+
+    def test__get_deployment(self):
+        _dict = fetch_dotfiles._get_config(self.config_working)
+        d_list = fetch_dotfiles._get_deployments(_dict)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,8 @@
 import argparse
 import json
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 # Set paths to static files/folder
 SELF_PATH = Path(__file__).parents[0]
@@ -14,6 +15,7 @@ DEPLOYMENT_K = "deployment"
 STORAGE_K = "storage"
 
 
+@dataclass
 class Deployment:
     deployment_name: str
     deployment_path: Path
@@ -21,16 +23,15 @@ class Deployment:
     valid: bool = False
 
 
-def __post_init__(self):
-    if not self.deployment_path.exists():
-        print(f"[!] Config for {self.name}@{self.deployment_path.as_posix()} "
-              f"does not exist. Skipping processing for {self.name}")
+def main():
+    # Get command line arguments
+    args = _get_args()
 
-    elif self.storage_path is not None:
-        if not self.storage_path.exists():
-            print(f"[!] Storage path specified for "
-                  f"{self.name}@{self.storage_path.as_posix()} does not exist."
-                  f" Skipping processing for {self.name}")
+    # Parse the config to make sure that it is a valid json
+    config_file = _get_config()
+
+    # Get list of deployment objects
+    deployments = _get_deployments(config_file)
 
 
 def _get_config(config: Optional[dict]) -> dict:
@@ -87,16 +88,21 @@ def _get_config(config: Optional[dict]) -> dict:
                 if obj_paths.get(STORAGE_K) is None:
                     exit(f"[!] {deployment_obj} is missing required key"
                          f"{STORAGE_K}")
-
     return config
 
 
-def main():
-    # Get command line arguments
-    args = _get_args()
-
-    # Parse the config to make sure that it is a valid json
-    config_file = _get_config()
+def _get_deployments(config: dict) -> List[Deployment]:
+    deployments = []
+    for deployment_unit in config[ROOT_JSON].keys():
+        for deployment_obj in config[ROOT_JSON][deployment_unit]:
+            for obj_name, obj_paths in deployment_obj.items():
+                deployments.append(Deployment(
+                        obj_name,
+                        obj_paths.get(DEPLOYMENT_K),
+                        obj_paths.get(STORAGE_K)
+                    )
+                )
+    return deployments
 
 
 def _set_unit_repo(deployment_path: Path, unit: str) -> None:
@@ -133,7 +139,6 @@ def _set_config_repo(deployment: str) -> Path:
     d_path = CONFIG_REPO / f"{deployment}_repo"
     d_path.mkdir(exist_ok=True)
     return d_path
-
 
 
 
