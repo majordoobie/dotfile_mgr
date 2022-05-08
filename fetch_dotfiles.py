@@ -1,5 +1,6 @@
 import argparse
 import json
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
@@ -13,17 +14,40 @@ CONFIG_PATH = CONFIG_REPO / "dotfiles.json"
 ROOT_JSON = "dotfiles"
 DEPLOYMENT_K = "deployment"
 STORAGE_K = "storage"
+STORAGE_PREFIX = "${D_ROOT}"
 
 
 @dataclass
 class Deployment:
     deployment_name: str
     deployment_path: Path
-    storage_path: Optional[Path]
+    storage_path: str
+
     valid: bool = False
+    _storage_path: Path = None
+
+    def __post_init__(self):
+        """Create the storage path if it does not exist"""
+        print(type(self.storage_path))
+        if self.storage_path.startswith(STORAGE_PREFIX):
+            self._storage_path = CONFIG_REPO / self.deployment_name / \
+                                 self.storage_path.lstrip(STORAGE_PREFIX)
+
+            # If the storage path does not exist, then make sure the
+            # directory is created for the storage
+            if not self._storage_path.exists():
+                parent = self._storage_path.parents[0]
+                parent.mkdir(exist_ok=True)
 
     def fetch_config(self):
-        print(self)
+        # First ensure that the deployment path exists, if it does not, skip
+        if not self.deployment_path.exists():
+            print(f"[+] The deployment path {self.deployment_name}@"
+                  f"{self.deployment_path.as_posix()} does not exist.")
+            return
+
+        # Copy the actual file to the storage location
+        shutil.copy(self.deployment_path, self._storage_path)
 
 
 def main():
@@ -113,10 +137,10 @@ def _get_deployments(config: dict) -> List[Deployment]:
         for deployment_obj in config[ROOT_JSON][deployment_unit]:
             for obj_name, obj_paths in deployment_obj.items():
                 deployments.append(Deployment(
-                        obj_name,
-                        Path(obj_paths.get(DEPLOYMENT_K)),
-                        Path(obj_paths.get(STORAGE_K))
-                    )
+                    obj_name,
+                    Path(obj_paths.get(DEPLOYMENT_K)),
+                    Path(obj_paths.get(STORAGE_K))
+                )
                 )
     return deployments
 
@@ -193,4 +217,3 @@ def _get_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     main()
-
