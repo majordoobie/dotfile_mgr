@@ -1,6 +1,7 @@
 import unittest
 from unittest import TestCase
 import fetch_dotfiles
+import yaml
 
 
 class Test(TestCase):
@@ -85,6 +86,7 @@ class Test(TestCase):
     def test__get_deployment(self):
         _dict = fetch_dotfiles._get_config(self.config_working)
         d_list = fetch_dotfiles._get_deployments(_dict)
+
 
 
 if __name__ == '__main__':

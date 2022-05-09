@@ -18,10 +18,11 @@ A `deployment unit` is a group of configuration s that belong to one entity. For
 my `alacritty` configuration has 3 total files. The `alacritty.yml` plus two color scheme yml files. These three
 files are considered one `deployment unit` because they belong to `alacritty`. A 
 `deployment unit` contains at least one `deployment object`. A `deployment object` 
-is a pair of directory values, the `deployment` path and `storage` path. 
+is a pair of directory values, the `deployment_fpath` path and `storage_path` or 
+`storage_fpath` where `_fpath` is the full path including the file name, and `_path`
 
-The `deployment` path is the path that the configuration file belongs to. Using 
-the `~` is encouraged, but the full path is also acceptable. The `storage` path 
+The `deployment_fpath` is the path that the configuration file belongs to. Using 
+the `~` is encouraged, but the full path is also acceptable. The `storage_$path` path 
 is the path that the configuration file will be stored. It is recommended to use the 
 `{D_ROOT}` prefix string with your path to allow the script to store the files automatically. 
 
@@ -32,12 +33,12 @@ Example:
     "alacritty": [
       {
         "alacritty_conf": {
-          "deployment": "~/.config/alacritty/alacritty.yml",
-          "storage": "${D_ROOT}/alacritty.yml"
+          "deployment_fpath": "~/.config/alacritty/alacritty.yml",
+          "storage_fpath": "${D_ROOT}/alacritty.yml"
         },
         "alacritty_scheme_gruvbox": {
           "deployment": "~/.config/alacritty/color_scheme_gruvbox.yml",
-          "storage": "${D_ROOT}/color_scheme_gruvbox.yml"
+          "storage_path": "${D_ROOT}"
         }
       }
     ]
@@ -45,7 +46,8 @@ Example:
 }
 ```
 
-The example above shows 1 `deployment unit` **alacritty** containing two `deployment objects` **alacritty_conf** and **alacritty_scheme_gruvbox**
+The example above shows 1 `deployment unit` **alacritty** containing two `deployment objects` 
+**alacritty_conf** and **alacritty_scheme_gruvbox**
 
 By using `${D_ROOT}` you are allowing the script to store both files above in the `config_repo/alacritty/` 
 directory without you having to worry about where they are. But, you also have the option
