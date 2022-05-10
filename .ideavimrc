@@ -65,13 +65,16 @@ map <Leader>qa <Action>(CloseAllEditors)
 map <leader>z <Action>(ToggleDistractionFreeMode)
 map <leader>t <Action>(ActivateTerminalToolWindow)
 map <leader>d <Action>(ActivateDebugToolWindow)
+map <leader>y <Action>(ActivatePythonConsoleToolWindow)
+"map <leader>m <Action>(ActivateNavBar)
+"map <leader>g <Action>(ActivateCommitToolWindow)
 
 
 " ##################################################################################################
 " ------ Code Block Behaviors -------
 " Local Region
-map zo <Action>(ExpandRegion)
-map zc <Action>(CollapseRegion)
+map zo <Action>(ExpandRegionRecursively)
+map zc <Action>(CollapseRegionRecursively)
 
 " File Region
 map <leader>zo <Action>(ExpandAllRegions)
@@ -87,7 +90,7 @@ set ideajoin
 set idearefactormode=visual
 
 " Edit code
-map <Leader>r <Action>(ReformatCode)
+map <Leader>rr <Action>(ReformatCode)
 map <leader>o <Action>(OptimizeImports)
 
 " --- "GOTO"
@@ -101,7 +104,7 @@ map gl <Action>(Forward)
 map gh <Action>(Back)
 map gs <Action>(FileStructurePopup)
 
-map <leader>rr <Action>(RecentLocations)
+map <leader>rl <Action>(RecentLocations)
 map <leader>l <Action>(LocalHistory.ShowHistory)
 
 " ##################################################################################################

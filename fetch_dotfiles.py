@@ -12,8 +12,9 @@ CONFIG_PATH = CONFIG_REPO / "dotfiles.json"
 
 # Set the mandatory dict keys
 ROOT_JSON = "dotfiles"
-DEPLOYMENT_K = "deployment"
-STORAGE_K = "storage"
+DEPLOYMENT_K = "deployment_fpath"
+STORAGE_FPATH_K = "storage_fpath"
+STORAGE_PATH_K = "storage_path"
 STORAGE_PREFIX = "${D_ROOT}"
 
 
@@ -79,47 +80,61 @@ def _get_config(config: Optional[dict]) -> dict:
     """
     if config is None:
         if not CONFIG_PATH.exists():
-            exit(f"[!] There is no config file available at "
-                 f"{CONFIG_PATH.as_posix()}")
+            raise ValueError(f"[!] There is no config file available at "
+                             f"{CONFIG_PATH.as_posix()}")
 
         # read the config json into a dictionary
         with CONFIG_PATH.open("rt", encoding="utf-8") as handle:
-            config = json.load(handle)
+            try:
+                config = json.load(handle)
+            except json.JSONDecoder as error:
+                exit(error)
 
     # First test if the root key is present. If it is not, exit
     if not config.get(ROOT_JSON):
-        exit("[!] INVALID JSON FORMAT: dotfiles.json missing root key "
-             f"\"{ROOT_JSON}\" located at {CONFIG_PATH.as_posix()}")
+        raise ValueError(
+            "[!] INVALID JSON FORMAT: dotfiles.json missing root key "
+            f"\"{ROOT_JSON}\" located at {CONFIG_PATH.as_posix()}")
 
     # Next, iterate over the dict and check that each deployment unit
     # has at least 1 deployment object where each deployment object
     # has at most two keys, being "DEPLOYMENT" and "STORAGE"
     for deployment_unit in config[ROOT_JSON].keys():
+
         # First test if deployment_unit is a LIST
         if not isinstance(config[ROOT_JSON][deployment_unit], list):
-            exit(f"[!] {deployment_unit} does not contain a list of "
-                 f"deployment objects")
+            raise ValueError(
+                "[!] {deployment_unit} does not contain a list of "
+                f"deployment objects")
 
         # Check that each deployment unit has at least one deployment object
         if not config[ROOT_JSON][deployment_unit]:
-            exit(f"[!] Deployment unit {deployment_unit} is empty!")
+            raise ValueError(
+                f"[!] Deployment unit {deployment_unit} is empty!")
 
-        # If list, check that each deployment unit only has two keys,
+        # If list check that each deployment unit only has two keys,
         # DEPLOYMENT_K and STORAGE_K
         for deployment_obj in config[ROOT_JSON][deployment_unit]:
             for obj_name, obj_paths in deployment_obj.items():
+
                 # First check that there is only two keys
                 if len(obj_paths.keys()) != 2:
-                    exit(f"[!] Deployment obj {deployment_obj} contains"
-                         f"more than two keys")
+                    raise ValueError(
+                        f"[!] Deployment obj {obj_name} contains "
+                        f"more than two keys. Only "
+                        f"{DEPLOYMENT_K}, {STORAGE_PATH_K}, "
+                        f"{STORAGE_FPATH_K} can be used")
 
                 # Check for the two mandatory keys
                 if obj_paths.get(DEPLOYMENT_K) is None:
-                    exit(f"[!] {deployment_obj} is missing required key"
-                         f"{DEPLOYMENT_K}")
-                if obj_paths.get(STORAGE_K) is None:
-                    exit(f"[!] {deployment_obj} is missing required key"
-                         f"{STORAGE_K}")
+                    raise ValueError(
+                        f"[!] {obj_name} is missing required key "
+                        f"{DEPLOYMENT_K}")
+
+                if obj_paths.get(STORAGE_PATH_K) is None and obj_paths.get(STORAGE_FPATH_K) is None:
+                    raise ValueError(
+                        f"[!] {obj_name} is missing required key "
+                        f"{STORAGE_FPATH_K} or {STORAGE_PATH_K}")
     return config
 
 
