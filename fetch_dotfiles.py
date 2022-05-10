@@ -1,4 +1,5 @@
 import argparse
+import filecmp
 import json
 import shutil
 from dataclasses import dataclass
@@ -15,7 +16,7 @@ ROOT_JSON = "dotfiles"
 DEPLOYMENT_K = "deployment_fpath"
 STORAGE_FPATH_K = "storage_fpath"
 STORAGE_PATH_K = "storage_path"
-STORAGE_PREFIX = "${D_ROOT}"
+STORAGE_PREFIX = "${S_ROOT}"
 
 
 @dataclass
@@ -28,6 +29,19 @@ class DeploymentObject:
 
     valid: bool = False
     _storage_path: Path = None
+
+    @property
+    def get_storage_name(self) -> str:
+        """
+        If the prefix is used, then return a shorter string so that
+        the terminal output is cleaner. If it's a full path, then keep the
+        full string.
+        :return:
+        """
+        if self.storage_path_used:
+            return self._storage_path.relative_to(SELF_PATH).as_posix()
+        else:
+            return self._storage_path.as_posix()
 
     def __post_init__(self) -> None:
         """
@@ -59,8 +73,7 @@ class DeploymentObject:
         if self.storage_path.startswith(STORAGE_PREFIX):
 
             # Create the base directory for this deployment obj
-            self._storage_path = CONFIG_REPO / self.deployment_unit / \
-                                 self.deployment_obj
+            self._storage_path = CONFIG_REPO / self.deployment_unit
 
             # Now append the reset of the path
             path_string = self.storage_path.lstrip(STORAGE_PREFIX)
@@ -78,8 +91,56 @@ class DeploymentObject:
         # Expand the deployment path incase the tilda was used
         self.deployment_path = self.deployment_path.expanduser()
 
-    def fetch_config(self):
-        # First ensure that the deployment path exists, if it does not, skip
+    def deploy_config(self) -> None:
+        if not self._storage_path.exists():
+            print(f"[+] The storage path {self.deployment_obj}@"
+                  f"{self._storage_path.as_posix()} does not exist. "
+                  f"\nSkipping...")
+            return
+
+        # Check if the deployment path exists, if it does not
+        # pop the file name and check if that directory exists.
+        # If it does not, create it.
+        if not self.deployment_path.exists():
+            deployment_dir = self.deployment_path.parents[0]
+            if not deployment_dir.exists():
+                try:
+                    deployment_dir.mkdir(parents=True)
+                except Exception as error:
+                    print(error)
+                    return
+
+        # If storage_path is a dir, get the file
+        if self.storage_path_used:
+            storage_file = self._storage_path / self.deployment_path.name
+        else:
+            storage_file = self._storage_path
+
+        # Ensure that storage path exists
+        if not storage_file.exists():
+            print(f"[!] Storage file {self.deployment_obj}@"
+                  f"{storage_file} does not exist")
+            return
+
+        # Check that the contents have not change, if they have
+        # then go ahead and copy. The filecmp does a byte byte
+        # comparison instead of a hash
+        if self.deployment_path.exists():
+            if not filecmp.cmp(self.deployment_path, storage_file):
+                try:
+                    print(
+                        f"[+] [{self.deployment_unit}] "
+                        f"{self.get_storage_name} -> "
+                        f"{self.deployment_path}")
+                    shutil.copy(storage_file, self.deployment_path)
+                except Exception as error:
+                    print(error)
+
+    def fetch_config(self) -> None:
+        """
+        Fetches the config file and stores it in the directory specified
+        by the configuration
+        """
         if not self.deployment_path.exists():
             print(f"[+] The deployment path {self.deployment_obj}@"
                   f"{self.deployment_path.as_posix()} does not exist. "
@@ -89,8 +150,12 @@ class DeploymentObject:
         # Copy the actual file to the storage location
         # This method preserves the file permissions
         try:
+            print(f"[+] [{self.deployment_unit}] {self.deployment_path} -> "
+                  f"{self.get_storage_name}")
             shutil.copy(self.deployment_path, self._storage_path)
         except FileNotFoundError as error:
+            print(error)
+        except Exception as error:
             print(error)
 
 
@@ -99,7 +164,10 @@ def main():
     args = _get_args()
 
     # Parse the config to make sure that it is a valid json
-    config_file = _get_config(None)
+    try:
+        config_file = _get_config(None)
+    except ValueError as error:
+        exit(error)
 
     # Get list of deployment objects
     deployments = _get_deployments(config_file)
@@ -108,6 +176,11 @@ def main():
     if args.fetch_configs:
         for deployment in deployments:
             deployment.fetch_config()
+
+    elif args.deploy_configs:
+        for deployment in deployments:
+            deployment.deploy_config()
+
 
 
 def _get_config(config: Optional[dict]) -> dict:

@@ -4,11 +4,11 @@
       {
         "alacritty_conf": {
           "deployment_fpath": "~/.config/alacritty/alacritty.yml",
-          "storage_path": "${D_ROOT}"
+          "storage_path": "${S_ROOT}"
         },
-        "alacritty_scheme_gruvbox": {
+        "alacritty_gruvbox_theme": {
           "deployment_fpath": "~/.config/alacritty/color_scheme_gruvbox.yml",
-          "storage_path": "${D_ROOT}"
+          "storage_path": "${S_ROOT}"
         }
       }
     ]
