@@ -19,36 +19,79 @@ STORAGE_PREFIX = "${D_ROOT}"
 
 
 @dataclass
-class Deployment:
-    deployment_name: str
+class DeploymentObject:
+    deployment_unit: str
+    deployment_obj: str
     deployment_path: Path
     storage_path: str
+    storage_path_used: bool
 
     valid: bool = False
     _storage_path: Path = None
 
-    def __post_init__(self):
-        """Create the storage path if it does not exist"""
-        print(type(self.storage_path))
-        if self.storage_path.startswith(STORAGE_PREFIX):
-            self._storage_path = CONFIG_REPO / self.deployment_name / \
-                                 self.storage_path.lstrip(STORAGE_PREFIX)
+    def __post_init__(self) -> None:
+        """
+        Expand the storage string to a Path object by interpreting if
+        the configuration is using either a literal path, D_ROOT path,
+        or D_ROOT file.
 
-            # If the storage path does not exist, then make sure the
-            # directory is created for the storage
-            if not self._storage_path.exists():
-                parent = self._storage_path.parents[0]
-                parent.mkdir(exist_ok=True)
+        Literal Path:
+            The literal path is a path that does not use the {D_ROOT} prefix
+            meaning that the DeploymentObject will not attempt to place the
+            file in the directory that it has created for it. Instead,
+            the DO will use the full path used by the configuration
+            wherever that may be
+
+            Example: /full/path/to/storage/can/be/anywhere
+
+        D_ROOT Path:
+            D_ROOT Path will use the D_ROOT directory plus create any
+            subdirectories specified and copy the source file to this
+            directory with the exact same name.
+
+        D_ROOT File:
+            D_ROOT File is just like D_ROOT Path where it will make
+            all the directories if anywhere added but it will assume
+            that the last "directory" is the name of the target file.
+        :return:
+        """
+        # Check if config calls for using the storage directory
+        if self.storage_path.startswith(STORAGE_PREFIX):
+
+            # Create the base directory for this deployment obj
+            self._storage_path = CONFIG_REPO / self.deployment_unit / \
+                                 self.deployment_obj
+
+            # Now append the reset of the path
+            path_string = self.storage_path.lstrip(STORAGE_PREFIX)
+            self._storage_path = self._storage_path / path_string
+
+            # If storage path, just mkdir, else we need to strip, then mkdir
+            if self.storage_path:
+                self._storage_path.mkdir(parents=True, exist_ok=True)
+            else:
+                # This will mkdir everything except the filename
+                self._storage_path.parents[0].mkdir(parents=True, exist_ok=True)
+        else:
+            self._storage_path = Path(self.storage_path)
+
+        # Expand the deployment path incase the tilda was used
+        self.deployment_path = self.deployment_path.expanduser()
 
     def fetch_config(self):
         # First ensure that the deployment path exists, if it does not, skip
         if not self.deployment_path.exists():
-            print(f"[+] The deployment path {self.deployment_name}@"
-                  f"{self.deployment_path.as_posix()} does not exist.")
+            print(f"[+] The deployment path {self.deployment_obj}@"
+                  f"{self.deployment_path.as_posix()} does not exist. "
+                  f"\nSkipping...")
             return
 
         # Copy the actual file to the storage location
-        shutil.copy(self.deployment_path, self._storage_path)
+        # This method preserves the file permissions
+        try:
+            shutil.copy(self.deployment_path, self._storage_path)
+        except FileNotFoundError as error:
+            print(error)
 
 
 def main():
@@ -131,14 +174,15 @@ def _get_config(config: Optional[dict]) -> dict:
                         f"[!] {obj_name} is missing required key "
                         f"{DEPLOYMENT_K}")
 
-                if obj_paths.get(STORAGE_PATH_K) is None and obj_paths.get(STORAGE_FPATH_K) is None:
+                if obj_paths.get(STORAGE_PATH_K) is None and obj_paths.get(
+                        STORAGE_FPATH_K) is None:
                     raise ValueError(
                         f"[!] {obj_name} is missing required key "
                         f"{STORAGE_FPATH_K} or {STORAGE_PATH_K}")
     return config
 
 
-def _get_deployments(config: dict) -> List[Deployment]:
+def _get_deployments(config: dict) -> List[DeploymentObject]:
     """
     Parse through the dict object and return a list of deployment objects.
     Each deployment object will have the deployment path and the source
@@ -151,49 +195,26 @@ def _get_deployments(config: dict) -> List[Deployment]:
     for deployment_unit in config[ROOT_JSON].keys():
         for deployment_obj in config[ROOT_JSON][deployment_unit]:
             for obj_name, obj_paths in deployment_obj.items():
-                deployments.append(Deployment(
+
+                # Check if storage path was used for the DO constructor
+                storage_path_used = True if obj_paths.get(
+                    STORAGE_PATH_K) else False
+
+                # Storage string
+                storage_string = obj_paths.get(
+                    STORAGE_PATH_K) if obj_paths.get(
+                    STORAGE_PATH_K) else obj_paths.get(STORAGE_FPATH_K)
+
+                # Append a new DO object to the deployments list
+                deployments.append(DeploymentObject(
+                    deployment_unit,
                     obj_name,
                     Path(obj_paths.get(DEPLOYMENT_K)),
-                    Path(obj_paths.get(STORAGE_K))
+                    storage_string,
+                    storage_path_used
                 )
                 )
     return deployments
-
-
-def _set_unit_repo(deployment_path: Path, unit: str) -> None:
-    """
-    Create the path to the deployment unit using the deployment path.
-
-    :Example:
-    If Tmux is a Deployment named tmux, the tmux repo will be created as
-    tmux_repo.
-
-    Tmux in most cases just has a single file, the tmux.conf. If the
-    Deployment Unit is called tmux_conf for tmux.conf then the deployment
-    path will be as follows:
-
-    Deployment Path: config_repo/tmux_repo/tmux_conf/tmux.conf
-
-    Note, that only the Deployment name is suffixed with "_repo" for
-    clarification
-
-    :param deployment_path: Path to the Deployment
-    :param unit: Name of the Deployment Unit to create the path
-    :return: None
-    """
-    u_path = deployment_path / unit
-    u_path.mkdir(exist_ok=True)
-
-
-def _set_config_repo(deployment: str) -> Path:
-    """
-    Create the repo path for each deployemtn
-    :param deployment: Deployment name i.e. tmux
-    :return:
-    """
-    d_path = CONFIG_REPO / f"{deployment}_repo"
-    d_path.mkdir(exist_ok=True)
-    return d_path
 
 
 def _get_args() -> argparse.Namespace:
