@@ -138,8 +138,11 @@ class DeploymentObject:
 
     def fetch_config(self) -> None:
         """
-        Fetches the config file and stores it in the directory specified
-        by the configuration
+        Determine that the deployment path exists before attempting to copy
+        from that path to the storage folder.
+
+        If the storage path already exists, then determine that the files
+        are different before attempting to copy them over.
         """
         if not self.deployment_path.exists():
             print(f"[+] The deployment path {self.deployment_obj}@"
@@ -147,16 +150,26 @@ class DeploymentObject:
                   f"\nSkipping...")
             return
 
-        # Copy the actual file to the storage location
-        # This method preserves the file permissions
-        try:
-            print(f"[+] [{self.deployment_unit}] {self.deployment_path} -> "
-                  f"{self.get_storage_name}")
-            shutil.copy(self.deployment_path, self._storage_path)
-        except FileNotFoundError as error:
-            print(error)
-        except Exception as error:
-            print(error)
+        # Check if the destination file exist, if it does check if
+        # the contents are different using the byte to byte comparison
+        do_copy = True
+        if (self._storage_path / self.deployment_path.name).exists():
+            # If files are the same, do not copy
+            if filecmp.cmp(self.deployment_path,
+                           (self._storage_path / self.deployment_path.name)):
+                do_copy = False
+                print(f"[-] Already up to date: {self.deployment_path.name}")
+
+        if do_copy:
+            try:
+                print(
+                    f"[+] [{self.deployment_unit}] {self.deployment_path} -> "
+                    f"{self.get_storage_name}")
+                shutil.copy(self.deployment_path, self._storage_path)
+            except FileNotFoundError as error:
+                print(error)
+            except Exception as error:
+                print(error)
 
 
 def main():
