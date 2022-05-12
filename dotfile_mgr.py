@@ -3,7 +3,6 @@ import filecmp
 import importlib.util
 import json
 import shutil
-import sys
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
