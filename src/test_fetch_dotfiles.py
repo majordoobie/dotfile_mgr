@@ -1,7 +1,7 @@
 import copy
 import unittest
 from unittest import TestCase
-import fetch_dotfiles
+import dotfile_mgr
 
 
 class Test(TestCase):

@@ -18,3 +18,21 @@ call plug#end()	" Above is where all the plug commands go
 colorscheme gruvbox				" set the theme
 map <silent> <C-n> :NERDTreeFocus<CR>		" Set the nerd tree focus to ctrl + n use :q to exit it
 
+filetype plugin indent on
+syntax on
+set ruler                       " Show the line and column numbers of the cursor.
+
+set colorcolumn=80				" set visual line length
+" set textwidth=80                " Hard-wrap long lines as you type them.
+
+set background=dark
+highlight ColorColumn ctermbg=0 guibg=lightgrey
+set number
+set smartcase
+set hlsearch
+set noerrorbells
+set tabstop=4 softtabstop=4
+set expandtab
+set smartindent
+
+

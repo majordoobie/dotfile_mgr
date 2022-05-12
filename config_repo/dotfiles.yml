@@ -1,0 +1,51 @@
+dotfiles:
+  alacritty:
+    - alacritty_conf:
+        deployment_fpath: "~/.config/alacritty/alacritty.yml"
+        storage_path: "${S_ROOT}"
+    - alacritty_gruvbox_theme:
+        deployment_fpath: "~/.config/alacritty/color_scheme_gruvbox.yml"
+        storage_path: "${S_ROOT}"
+
+  yabai_and_skhdrc:
+    - skhdrc:
+        deployment_fpath: "~/.config/skhd/skhdrc"
+        storage_path: "${S_ROOT}"
+    - yabai_conf:
+        deployment_fpath: "~/.config/yabai/yabairc"
+        storage_path: "${S_ROOT}"
+
+  vim:
+    - nvim_rc:
+        # I use COC with some plugins for basic terminal
+        # configurations
+        deployment_fpath: "~/.config/nvim/init.vim"
+        storage_path: "${S_ROOT}"
+
+    - ideavimrc_jetbrains:
+        # This vimrc is for JetBrain IDEs currently tested for PyCharm and CLion
+        deployment_fpath: "~/.ideavimrc"
+        storage_path: "${S_ROOT}"
+
+  karabiner_elements:
+    - karabiner_conf:
+        deployment_fpath: "~/.config/karabiner/karabiner.json"
+        storage_path: "${S_ROOT}"
+
+  zsh:
+    - zsh_rc:
+        # Mostly just aliases here
+        deployment_fpath: "~/.zshrc"
+        storage_path: "${S_ROOT}"
+    - p10k_rc:
+        # Modified how the PS1 is displayed
+        deployment_fpath: "~/.p10k.zsh"
+        storage_path: "${S_ROOT}"
+
+  tmux:
+    - tmux_conf:
+        deployment_fpath: "~/.tmux.conf"
+        storage_path: "${S_ROOT}"
+
+
+

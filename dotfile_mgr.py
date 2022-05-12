@@ -1,15 +1,20 @@
 import argparse
 import filecmp
+import importlib.util
 import json
 import shutil
+import sys
 from dataclasses import dataclass
+from enum import Enum, auto
 from pathlib import Path
 from typing import List, Optional
 
-# Set paths to static files/folder
 SELF_PATH = Path(__file__).parents[0]
 CONFIG_REPO = SELF_PATH / "config_repo"
-CONFIG_PATH = CONFIG_REPO / "dotfiles.json"
+CONFIG_PATH = CONFIG_REPO
+JSON_FILE = "dotfiles.json"
+YAML_FILES = ["dotfiles.yml", "dotfiles.yaml"]
+YAML_MODULE = "yaml"
 
 # Set the mandatory dict keys
 ROOT_JSON = "dotfiles"
@@ -17,6 +22,12 @@ DEPLOYMENT_K = "deployment_fpath"
 STORAGE_FPATH_K = "storage_fpath"
 STORAGE_PATH_K = "storage_path"
 STORAGE_PREFIX = "${S_ROOT}"
+
+
+class ConfigType(Enum):
+    """Used to denote what configuration type is used"""
+    JSON = auto()
+    YAML = auto()
 
 
 @dataclass
@@ -84,7 +95,8 @@ class DeploymentObject:
                 self._storage_path.mkdir(parents=True, exist_ok=True)
             else:
                 # This will mkdir everything except the filename
-                self._storage_path.parents[0].mkdir(parents=True, exist_ok=True)
+                self._storage_path.parents[0].mkdir(parents=True,
+                                                    exist_ok=True)
         else:
             self._storage_path = Path(self.storage_path)
 
@@ -101,7 +113,9 @@ class DeploymentObject:
         # Check if the deployment path exists, if it does not
         # pop the file name and check if that directory exists.
         # If it does not, create it.
+        file_exists = True
         if not self.deployment_path.exists():
+            file_exists = False
             deployment_dir = self.deployment_path.parents[0]
             if not deployment_dir.exists():
                 try:
@@ -125,16 +139,22 @@ class DeploymentObject:
         # Check that the contents have not change, if they have
         # then go ahead and copy. The filecmp does a byte byte
         # comparison instead of a hash
-        if self.deployment_path.exists():
-            if not filecmp.cmp(self.deployment_path, storage_file):
-                try:
-                    print(
-                        f"[+] [{self.deployment_unit}] "
-                        f"{self.get_storage_name} -> "
-                        f"{self.deployment_path}")
-                    shutil.copy(storage_file, self.deployment_path)
-                except Exception as error:
-                    print(error)
+        do_copy = True
+        if file_exists:
+            if filecmp.cmp(self.deployment_path, storage_file):
+                do_copy = False
+                print(f"[-] [{self.deployment_unit}] already up to date: "
+                      f"{self.deployment_path.name}")
+
+        if do_copy:
+            try:
+                print(
+                    f"[+] [{self.deployment_unit}] "
+                    f"{self.get_storage_name} -> "
+                    f"{self.deployment_path}")
+                shutil.copy(storage_file, self.deployment_path)
+            except Exception as error:
+                print(error)
 
     def fetch_config(self) -> None:
         """
@@ -145,9 +165,8 @@ class DeploymentObject:
         are different before attempting to copy them over.
         """
         if not self.deployment_path.exists():
-            print(f"[+] The deployment path {self.deployment_obj}@"
-                  f"{self.deployment_path.as_posix()} does not exist. "
-                  f"\nSkipping...")
+            print(f"[!] The deployment path {self.deployment_obj}@"
+                  f"{self.deployment_path.as_posix()} does not exist")
             return
 
         # Check if the destination file exist, if it does check if
@@ -158,7 +177,8 @@ class DeploymentObject:
             if filecmp.cmp(self.deployment_path,
                            (self._storage_path / self.deployment_path.name)):
                 do_copy = False
-                print(f"[-] Already up to date: {self.deployment_path.name}")
+                print(f"[-] [{self.deployment_unit}] Already up to "
+                      f"date: {self.deployment_path.name}")
 
         if do_copy:
             try:
@@ -195,6 +215,41 @@ def main():
             deployment.deploy_config()
 
 
+def _get_config_file() -> dict:
+    """
+    Function attempts to iterate over the possible configuration
+    file names. If no matches are found, raise an exception.
+    :return:
+    """
+    paths = (
+        (ConfigType.JSON, CONFIG_PATH / JSON_FILE),
+        (ConfigType.YAML, CONFIG_PATH / YAML_FILES[0]),
+        (ConfigType.YAML, CONFIG_PATH / YAML_FILES[1])
+    )
+    for path in paths:
+        if path[1].exists():
+            try:
+                with path[1].open("rt", encoding="utf-8") as handle:
+                    if path[0] == ConfigType.JSON:
+                        return json.load(handle)
+                    else:
+                        # Check if the YAML module exists before importing
+                        if importlib.util.find_spec(YAML_MODULE) is not None:
+                            import yaml
+                            return yaml.safe_load(handle)
+                        else:
+                            raise ModuleNotFoundError(
+                                f"[!] Found yaml config file but could not "
+                                f"import the PyYAML module. Please install the"
+                                f" module using the requirements.txt file"
+                            )
+            except Exception as error:
+                exit(error)
+
+    # If no files can be found, then exit
+    raise FileNotFoundError(f"[!] There is no config file available at "
+                            f"{CONFIG_PATH.as_posix()}")
+
 
 def _get_config(config: Optional[dict]) -> dict:
     """
@@ -208,16 +263,7 @@ def _get_config(config: Optional[dict]) -> dict:
     :rtype: dict
     """
     if config is None:
-        if not CONFIG_PATH.exists():
-            raise ValueError(f"[!] There is no config file available at "
-                             f"{CONFIG_PATH.as_posix()}")
-
-        # read the config json into a dictionary
-        with CONFIG_PATH.open("rt", encoding="utf-8") as handle:
-            try:
-                config = json.load(handle)
-            except json.JSONDecoder as error:
-                exit(error)
+        config = _get_config_file()
 
     # First test if the root key is present. If it is not, exit
     if not config.get(ROOT_JSON):
@@ -233,7 +279,7 @@ def _get_config(config: Optional[dict]) -> dict:
         # First test if deployment_unit is a LIST
         if not isinstance(config[ROOT_JSON][deployment_unit], list):
             raise ValueError(
-                "[!] {deployment_unit} does not contain a list of "
+                f"[!] [{deployment_unit}] does not contain a list of "
                 f"deployment objects")
 
         # Check that each deployment unit has at least one deployment object
@@ -281,7 +327,6 @@ def _get_deployments(config: dict) -> List[DeploymentObject]:
     for deployment_unit in config[ROOT_JSON].keys():
         for deployment_obj in config[ROOT_JSON][deployment_unit]:
             for obj_name, obj_paths in deployment_obj.items():
-
                 # Check if storage path was used for the DO constructor
                 storage_path_used = True if obj_paths.get(
                     STORAGE_PATH_K) else False
@@ -312,23 +357,25 @@ def _get_args() -> argparse.Namespace:
     """
 
     parser = argparse.ArgumentParser(
-        description="Tool fetches all the configuration files specified in the"
-                    " json file. The destination can be left to "
-                    "None and a the script will automatically name the "
-                    "destination folder."
+        description=("%(prog)s manages your dotfiles by fetching "
+                     "and deploying them based on the paths set up "
+                     "in the %(prog)s config. To use this tool, you "
+                     "will need a configuration file in either json or"
+                     "yaml format. The configuration format can be found "
+                     "the git repo.")
     )
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
         "--fetch_configs",
-        help="Fetch all the configs specified in the json file",
+        help="Fetch config files specified in the %(prog)s config",
         action="store_true",
         dest="fetch_configs",
         default=False
     )
     group.add_argument(
         "--deploy_configs",
-        help="Deploy all the configs specified in the json file",
+        help="Deploy config files specified in the %(prog)s config",
         action="store_true",
         dest="deploy_configs",
         default=False

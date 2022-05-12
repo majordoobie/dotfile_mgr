@@ -7,6 +7,7 @@
 
 " ##################################################################################################
 " ------ Global Changes ------
+
 " Leaderkey is the spacebar
 let mapleader = " "
 
@@ -30,14 +31,16 @@ vnoremap > >gv
 
 " ##################################################################################################
 " ------ Modify Scrolling Behaviors -------
+
 " Number of lines to show above and below cursor. Useful for using ctrl + U/D
 set scrolloff=15
 " Set relative paths
 set relativenumber
-" Do incremental searching.
 
 " ##################################################################################################
 " ------ Modify Search Behaviors -------
+
+" Do incremental searching.
 set incsearch
 " Highlight search results
 set hlsearch
@@ -49,6 +52,7 @@ nnoremap <CR> :noh<CR><CR>
 
 " ##################################################################################################
 " ------ Pane Manipulation Behaviors -------
+
 map <leader>- <Action>(SplitHorizontally)
 map <leader>_ <Action>(SplitVertically)
 
@@ -59,19 +63,19 @@ nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 
 " Closing Panes
-map <Leader>q <Action>(CloseContent)
+map <Leader>qq <Action>(CloseContent)
 map <Leader>qa <Action>(CloseAllEditors)
 
-map <leader>z <Action>(ToggleDistractionFreeMode)
+map <leader>zz <Action>(ToggleDistractionFreeMode)
 map <leader>t <Action>(ActivateTerminalToolWindow)
 map <leader>d <Action>(ActivateDebugToolWindow)
-map <leader>y <Action>(ActivatePythonConsoleToolWindow)
-"map <leader>m <Action>(ActivateNavBar)
-"map <leader>g <Action>(ActivateCommitToolWindow)
+map <leader>p <Action>(ActivatePythonConsoleToolWindow)
+map <leader>c <Action>(ActivateCommitToolWindow)
 
 
 " ##################################################################################################
 " ------ Code Block Behaviors -------
+
 " Local Region
 map zo <Action>(ExpandRegionRecursively)
 map zc <Action>(CollapseRegionRecursively)
@@ -96,13 +100,15 @@ map <leader>o <Action>(OptimizeImports)
 " --- "GOTO"
 map gr <Action>(Refactorings.QuickListPopupAction)
 map gf <Action>(GotoFile)
-map gd <Action>(GotoDeclaration)
+map gb <Action>(GotoDeclaration)
 map ge <Action>(GotoNextError)
 map gt <Action>(GotoTest)
 map gu <Action>(FindUsages)
 map gl <Action>(Forward)
 map gh <Action>(Back)
 map gs <Action>(FileStructurePopup)
+map gd <Action>(QuickJavaDoc)
+map gp <Action>(ParameterInfo)
 
 map <leader>rl <Action>(RecentLocations)
 map <leader>l <Action>(LocalHistory.ShowHistory)
