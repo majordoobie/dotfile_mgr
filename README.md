@@ -6,6 +6,7 @@ by automatically creating their destination directories. Copies are only made wh
 files have changed, so you can safely perform your fetch/deploy commands and a status
 of the files changing will be given.
 ![Fetch Example](images/fetch_example.jpg)
+![Deploy Example](images/deploy_example.jpg)
 
 ## DotfileMgr Quick Notes
 
