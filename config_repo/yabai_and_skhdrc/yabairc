@@ -87,5 +87,8 @@ yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Cisco Webex Start$" manage=off
 yabai -m rule --add app="^Private Internet Access$" manage=off
 yabai -m rule --add app="^Photos$" manage=off
+yabai -m rule --add app="iStat Menus.*" manage=off mouse_follows_focus=off
+yabai -m rule --add title="JetBrains Toolbox" manage=off mouse_follows_focus=off
+yabai -m rule --add title="App Store" manage=off mouse_follows_focus=off
 
 echo "yabai configuration loaded.."

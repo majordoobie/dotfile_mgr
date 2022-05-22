@@ -116,6 +116,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias ll='ls -lAh --color=auto'
 alias vim='nvim'
+alias code='cd ~/OneDrive/Cybernetic/active_projects'
 export EDITOR='nvim'
 export HOME_KEY='/Users/anker/Library/CloudStorage/OneDrive-Personal/keys'
 
