@@ -4,6 +4,7 @@
 " https://github.com/JetBrains/ideavim/wiki/%22set%22-commands
 " Find more examples here: https://jb.gg/share-ideavimrc
 " https://stackoverflow.com/questions/3776117/what-is-the-difference-between-the-remap-noremap-nnoremap-and-vnoremap-mapping
+" https://gist.github.com/zchee/9c78f91cc5ad771c1f5d
 
 
 " ##################################################################################################
@@ -19,8 +20,7 @@ map Q gq
 set clipboard+=unnamed
 set clipboard+=ideaput
 
-" This for some reason is needed to allow commands such as CloseAllEditors to
-" work. Something about Allowing vim shortcuts to run over the built in shortcut given
+" Free the ctrl + k key binding that the IDE uses
 sethandler <c-k> a:vim
 
 " Quickly reload vimrc
@@ -30,6 +30,8 @@ nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
 " to cut a paste, use select + d. If I just want to delete use select + x
 nnoremap x "_x
 nnoremap r "_r
+
+" Map the indentation to work with the group indentation
 vnoremap < <gv
 vnoremap > >gv
 
@@ -105,9 +107,11 @@ map <leader>g2 <Action>(ActivateDebugToolWindow)                | " Open the deb
 map <leader>gt <Action>(ActivateTerminalToolWindow)             | " Open the terminal
 map <leader>gc <Action>(ActivateCommitToolWindow)               | " Open the commit modal
 map <leader>gd <Action>(ActivateDatabaseToolWindow)             | " Open the database window
-map <leader>gp <Action>(ActivatePythonConsoleToolWindow)        | " Open iPython window
+map <leader>gy <Action>(ActivatePythonConsoleToolWindow)        | " Open iPython window
 map <leader>go <Action>(ActivateTODOToolWindow)                 | " Open todo window
 map <leader>gv <Action>(ActivateVersionControlToolWindow)       | " Open version control (the git button)
+map <leader>gm <Action>(ActivateMessagesToolWindow)
+map <leader>gx <Action>(BuildMenu)
 
 " Search Box; The all is opened with shift + shift on all platforms
 map <leader>gf <Action>(GotoFile)                               | " Open file fuzzy finder
@@ -117,7 +121,6 @@ map <leader>gp <Action>(ActivateProjectToolWindow)              | " Open the fil
 " Open Sub Menus
 map <leader>ghl <Action>(RecentLocations)                       | " Open the last places you changed code
 map <leader>ghk <Action>(LocalHistory.ShowHistory)              | " Open time based window with all your changes
-map <leader>gs <Action>(FileStructurePopup)                     | " Open up the structure of the code such as symbols
 map <leader>gb <Action>(ViewBreakpoints)                        | " Open all the breakpoints set
 
 
@@ -135,10 +138,9 @@ map <leader>er <Action>(Refactorings.QuickListPopupAction)      | " Open menu fo
 " ------ View Information About The Code
 map <leader>vu <Action>(FindUsages)                             | " View all the calls to it
 map <leader>vd <Action>(QuickJavaDoc)                           | " View docstrings
-map <leader>vp <Action>(ParameterInfo)                          | " Quick look at the parameters of the function
 map <leader>vi <Action>(QuickImplementations)                   | " View code of function
-map <leader>vq <Action>(QuickTypeDefinition)                    | " Unknown. Maybe a java thing?
-map <leader>vc <Action>(ChooseRunConfiguration)                 | " Select a run configuration
+map <leader>vp <Action>(ParameterInfo)                          | " Quick look at the parameters of the function
+map <leader>vr <Action>(ChooseRunConfiguration)                 | " Select a run configuration
 map <leader>vh <Action>(ViewCallHierarchy)
 map <leader>vb <Action>(ByteCodeViewer)
 
@@ -150,6 +152,7 @@ map <leader>jt <Action>(GotoTest)
 map <leader>jl <Action>(Forward)
 map <leader>jh <Action>(Back)
 map <leader>jp <Action>(NewScratchFile)
+map <leader>js <Action>(FileStructurePopup)                     | " Open up the structure of the code such as symbols
 
 " ##################################################################################################
 " ------ Code Execution -------
