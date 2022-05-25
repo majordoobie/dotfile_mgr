@@ -2,6 +2,7 @@
 " https://amine-elhattami.medium.com/destination-ideavim-day-1-the-basics-793a514af57f
 " https://towardsdatascience.com/the-essential-ideavim-remaps-291d4cd3971b
 " https://github.com/JetBrains/ideavim/wiki/%22set%22-commands
+" Find more examples here: https://jb.gg/share-ideavimrc
 " https://stackoverflow.com/questions/3776117/what-is-the-difference-between-the-remap-noremap-nnoremap-and-vnoremap-mapping
 
 
@@ -28,6 +29,11 @@ nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
 vnoremap < <gv
 vnoremap > >gv
 
+" Join things together like comments and method chaining. Activated with shift+j
+set ideajoin
+
+" When refactoring, what vim mode should you be in. Visual allows you to quickly delete or esp to edit
+set idearefactormode=visual
 
 " ##################################################################################################
 " ------ Modify Scrolling Behaviors -------
@@ -52,9 +58,15 @@ nnoremap <CR> :noh<CR><CR>
 
 " ##################################################################################################
 " ------ Pane Manipulation Behaviors -------
+" Actions that manipulate the panes will start with "p"
 
-map <leader>- <Action>(SplitHorizontally)
-map <leader>_ <Action>(SplitVertically)
+" Open panes as duplicates
+map <leader>p- <Action>(SplitHorizontally)
+map <leader>p_ <Action>(SplitVertically)
+
+" Closing Panes "close close" and "close all"
+map <Leader>pcc <Action>(CloseContent)
+map <Leader>pca <Action>(CloseAllEditors)
 
 " Sets hjkl as pane movement keys
 nnoremap <c-h> <c-w>h
@@ -62,56 +74,66 @@ nnoremap <c-l> <c-w>l
 nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 
-" Closing Panes
-map <Leader>qq <Action>(CloseContent)
-map <Leader>qa <Action>(CloseAllEditors)
+" Code Blocks; "pane block-open" "pane block-close" "pane global-block-open"
+map <leader>po <Action>(ExpandRegionRecursively)
+map <leader>pc <Action>(CollapseRegionRecursively)
 
-map <leader>zz <Action>(ToggleDistractionFreeMode)
-map <leader>t <Action>(ActivateTerminalToolWindow)
-map <leader>d <Action>(ActivateDebugToolWindow)
-map <leader>p <Action>(ActivatePythonConsoleToolWindow)
-map <leader>c <Action>(ActivateCommitToolWindow)
+map <leader>pgo <Action>(ExpandAllRegions)
+map <leader>pgc <Action>(CollapseAllRegions)
 
+" Enable zen mode
+map <leader>pz <Action>(ToggleDistractionFreeMode)
 
 " ##################################################################################################
-" ------ Code Block Behaviors -------
+" ------ G: GoTo - These commands open up GUI elements -------
 
-" Local Region
-map zo <Action>(ExpandRegionRecursively)
-map zc <Action>(CollapseRegionRecursively)
+" Opening Tool Windows
+map <leader>g1 <Action>(ActivateRunToolWindow)
+map <leader>g2 <Action>(ActivateDebugToolWindow)
 
-" File Region
-map <leader>zo <Action>(ExpandAllRegions)
-map <leader>zc <Action>(CollapseAllRegions)
+" Search Box; The all is opened with shift + shift on all platforms
+map <leader>gf <Action>(GotoFile)
+map <leader>ga <Action>(GotoAction)
+map <leader>gp <Action>(ActivateProjectToolWindow)
+
+" Open Tool Windows
+map <leader>gd <Action>(ActivateDatabaseToolWindow)
+map <leader>gt <Action>(ActivateTerminalToolWindow)
+map <leader>gp <Action>(ActivatePythonConsoleToolWindow)
+map <leader>gc <Action>(ActivateCommitToolWindow)
+map <leader>go <Action>(ActivateTODOToolWindow)
+map <leader>gv <Action>(ActivateVersionControlToolWindow)
+map <leader>gq <Action>(ActivateFavoritesToolWindow)
+" TODO: You are here can't seem to get the cmake window to open
+
+" Open Sub Menus
+map <leader>gr <Action>(Refactorings.QuickListPopupAction)
+map <leader>ghl <Action>(RecentLocations)
+map <leader>ghc <Action>(LocalHistory.ShowHistory)
+map <leader>gs <Action>(FileStructurePopup)
+map <leader>gb <Action>(ViewBreakpoints)
+map <leader>gk <Action>(GotoTest)
+
+
 
 
 " ##################################################################################################
 " ------ Code Editing Behaviors -------
-" Join things together like comments and method chaining. Activated with shift+j
-set ideajoin
-
-" When refactoring, what vim mode should you be in. Visual allows you to quickly delete or esp to edit
-set idearefactormode=visual
 
 " Edit code
-map <Leader>rr <Action>(ReformatCode)
 map <leader>o <Action>(OptimizeImports)
 
 " --- "GOTO"
-map gr <Action>(Refactorings.QuickListPopupAction)
-map gf <Action>(GotoFile)
-map gb <Action>(GotoDeclaration)
-map ge <Action>(GotoNextError)
-map gt <Action>(GotoTest)
-map gu <Action>(FindUsages)
-map gl <Action>(Forward)
-map gh <Action>(Back)
-map gs <Action>(FileStructurePopup)
-map gd <Action>(QuickJavaDoc)
-map gp <Action>(ParameterInfo)
+"map <leader>gr <Action>(ReformatCode)
+"map gb <Action>(GotoDeclaration)
+"map ge <Action>(GotoNextError)
+"map gt <Action>(GotoTest)
+"map gu <Action>(FindUsages)
+"map gl <Action>(Forward)
+"map gh <Action>(Back)
+"map gd <Action>(QuickJavaDoc)
+"map gp <Action>(ParameterInfo)
 
-map <leader>rl <Action>(RecentLocations)
-map <leader>l <Action>(LocalHistory.ShowHistory)
 
 " ##################################################################################################
 " ------ Code Execution -------
@@ -119,9 +141,7 @@ map <leader>1 <Action>(Run)
 map <leader>2 <Action>(Debug)
 map <leader>0 <Action>(Stop)
 map <leader>bb <Action>(ToggleLineBreakpoint)
-map <leader>ba <Action>(ViewBreakpoints)
 
-" Find more examples here: https://jb.gg/share-ideavimrc
 
 
 
