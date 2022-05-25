@@ -9,25 +9,33 @@
 " ##################################################################################################
 " ------ Global Changes ------
 
-" Leaderkey is the spacebar
+" Leader key is the spacebar
 let mapleader = " "
 
 " Don't use Ex mode, use Q for formatting.
 map Q gq
 
 " Allow the use of the normal copy buffer
-" set clipboard+=unnamed
-" set clipboard+=ideaput
+set clipboard+=unnamed
+set clipboard+=ideaput
 
-" This for some reason is needed to allow commands such as CloseAllEditors to work. Something about
-" Allowing vim shortcuts to run over the built in shortcut given
+" This for some reason is needed to allow commands such as CloseAllEditors to
+" work. Something about Allowing vim shortcuts to run over the built in shortcut given
 sethandler <c-k> a:vim
 
 " Quickly reload vimrc
 nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
 
+" Put x/r into the black hole register so they don't get copied. So if I want
+" to cut a paste, use select + d. If I just want to delete use select + x
+nnoremap x "_x
+nnoremap r "_r
 vnoremap < <gv
 vnoremap > >gv
+
+"^$ The symbol is too hard to press
+map gh ^
+map gl $
 
 " Join things together like comments and method chaining. Activated with shift+j
 set ideajoin
@@ -58,15 +66,19 @@ nnoremap <CR> :noh<CR><CR>
 
 " ##################################################################################################
 " ------ Pane Manipulation Behaviors -------
-" Actions that manipulate the panes will start with "p"
 
-" Open panes as duplicates
-map <leader>p- <Action>(SplitHorizontally)
-map <leader>p_ <Action>(SplitVertically)
+" Open panes as duplicates and resize
+map <leader>- <Action>(SplitHorizontally)
+map <leader>_ <Action>(SplitVertically)
+map <a-m> <Action>(MaximizeEditorInSplit)
+map <a-k> <Action>(StretchSplitToTop)
+map <a-j> <Action>(StretchSplitToBottom)
+map <a-h> <Action>(StretchSplitToLeft)
+map <a-l> <Action>(StretchSplitToRight)
 
 " Closing Panes "close close" and "close all"
-map <Leader>pcc <Action>(CloseContent)
-map <Leader>pca <Action>(CloseAllEditors)
+map <Leader>qq <Action>(CloseContent)
+map <Leader>qa <Action>(CloseAllEditors)
 
 " Sets hjkl as pane movement keys
 nnoremap <c-h> <c-w>h
@@ -75,65 +87,69 @@ nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 
 " Code Blocks; "pane block-open" "pane block-close" "pane global-block-open"
-map <leader>po <Action>(ExpandRegionRecursively)
-map <leader>pc <Action>(CollapseRegionRecursively)
+map <leader>po <Action>(ExpandRegionRecursively)                | " Open fold
+map <leader>pc <Action>(CollapseRegionRecursively)              | " Close fold
 
-map <leader>pgo <Action>(ExpandAllRegions)
-map <leader>pgc <Action>(CollapseAllRegions)
+map <leader>pgo <Action>(ExpandAllRegions)                      | " Open ALL folds
+map <leader>pgc <Action>(CollapseAllRegions)                    | " Close ALL folds
 
 " Enable zen mode
-map <leader>pz <Action>(ToggleDistractionFreeMode)
+map <leader>pz <Action>(ToggleDistractionFreeMode)              | " Toggle zen mode
 
 " ##################################################################################################
 " ------ G: GoTo - These commands open up GUI elements -------
 
 " Opening Tool Windows
-map <leader>g1 <Action>(ActivateRunToolWindow)
-map <leader>g2 <Action>(ActivateDebugToolWindow)
+map <leader>g1 <Action>(ActivateRunToolWindow)                  | " Open the run window
+map <leader>g2 <Action>(ActivateDebugToolWindow)                | " Open the debug window
+map <leader>gt <Action>(ActivateTerminalToolWindow)             | " Open the terminal
+map <leader>gc <Action>(ActivateCommitToolWindow)               | " Open the commit modal
+map <leader>gd <Action>(ActivateDatabaseToolWindow)             | " Open the database window
+map <leader>gp <Action>(ActivatePythonConsoleToolWindow)        | " Open iPython window
+map <leader>go <Action>(ActivateTODOToolWindow)                 | " Open todo window
+map <leader>gv <Action>(ActivateVersionControlToolWindow)       | " Open version control (the git button)
 
 " Search Box; The all is opened with shift + shift on all platforms
-map <leader>gf <Action>(GotoFile)
-map <leader>ga <Action>(GotoAction)
-map <leader>gp <Action>(ActivateProjectToolWindow)
-
-" Open Tool Windows
-map <leader>gd <Action>(ActivateDatabaseToolWindow)
-map <leader>gt <Action>(ActivateTerminalToolWindow)
-map <leader>gp <Action>(ActivatePythonConsoleToolWindow)
-map <leader>gc <Action>(ActivateCommitToolWindow)
-map <leader>go <Action>(ActivateTODOToolWindow)
-map <leader>gv <Action>(ActivateVersionControlToolWindow)
-map <leader>gq <Action>(ActivateFavoritesToolWindow)
-" TODO: You are here can't seem to get the cmake window to open
+map <leader>gf <Action>(GotoFile)                               | " Open file fuzzy finder
+map <leader>ga <Action>(GotoAction)                             | " Open Command pallet
+map <leader>gp <Action>(ActivateProjectToolWindow)              | " Open the file structure
 
 " Open Sub Menus
-map <leader>gr <Action>(Refactorings.QuickListPopupAction)
-map <leader>ghl <Action>(RecentLocations)
-map <leader>ghc <Action>(LocalHistory.ShowHistory)
-map <leader>gs <Action>(FileStructurePopup)
-map <leader>gb <Action>(ViewBreakpoints)
-map <leader>gk <Action>(GotoTest)
-
-
+map <leader>ghl <Action>(RecentLocations)                       | " Open the last places you changed code
+map <leader>ghk <Action>(LocalHistory.ShowHistory)              | " Open time based window with all your changes
+map <leader>gs <Action>(FileStructurePopup)                     | " Open up the structure of the code such as symbols
+map <leader>gb <Action>(ViewBreakpoints)                        | " Open all the breakpoints set
 
 
 " ##################################################################################################
 " ------ Code Editing Behaviors -------
 
 " Edit code
-map <leader>o <Action>(OptimizeImports)
+map <leader>eo <Action>(OptimizeImports)                        | " Optimize the imports by removing those not used
+map <leader>ef <Action>(ReformatCode)                           | " Refactor the file or selected
+map <leader>es <Action>(SurroundWith)                           | " Open submenu for picking what to add for, while, if
+map <leader>er <Action>(Refactorings.QuickListPopupAction)      | " Open menu for refactoring
 
-" --- "GOTO"
-"map <leader>gr <Action>(ReformatCode)
-"map gb <Action>(GotoDeclaration)
-"map ge <Action>(GotoNextError)
-"map gt <Action>(GotoTest)
-"map gu <Action>(FindUsages)
-"map gl <Action>(Forward)
-"map gh <Action>(Back)
-"map gd <Action>(QuickJavaDoc)
-"map gp <Action>(ParameterInfo)
 
+" ##################################################################################################
+" ------ View Information About The Code
+map <leader>vu <Action>(FindUsages)                             | " View all the calls to it
+map <leader>vd <Action>(QuickJavaDoc)                           | " View docstrings
+map <leader>vp <Action>(ParameterInfo)                          | " Quick look at the parameters of the function
+map <leader>vi <Action>(QuickImplementations)                   | " View code of function
+map <leader>vq <Action>(QuickTypeDefinition)                    | " Unknown. Maybe a java thing?
+map <leader>vc <Action>(ChooseRunConfiguration)                 | " Select a run configuration
+map <leader>vh <Action>(ViewCallHierarchy)
+map <leader>vb <Action>(ByteCodeViewer)
+
+" ##################################################################################################
+" --- Jump To
+map <leader>jd <Action>(GotoDeclaration)
+map <leader>jn <Action>(GotoNextError)
+map <leader>jt <Action>(GotoTest)
+map <leader>jl <Action>(Forward)
+map <leader>jh <Action>(Back)
+map <leader>jp <Action>(NewScratchFile)
 
 " ##################################################################################################
 " ------ Code Execution -------
@@ -141,6 +157,7 @@ map <leader>1 <Action>(Run)
 map <leader>2 <Action>(Debug)
 map <leader>0 <Action>(Stop)
 map <leader>bb <Action>(ToggleLineBreakpoint)
+map <leader>br <Action>(Debugger.RemoveAllBreakpoints)
 
 
 
