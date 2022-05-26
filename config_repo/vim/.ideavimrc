@@ -9,6 +9,8 @@
 
 " ##################################################################################################
 " ------ Global Changes ------
+" Set nerd tree
+set NERDTree
 
 " Leader key is the spacebar
 let mapleader = " "
@@ -115,6 +117,7 @@ map <leader>gx <Action>(BuildMenu)
 
 " Search Box; The all is opened with shift + shift on all platforms
 map <leader>gf <Action>(GotoFile)                               | " Open file fuzzy finder
+map gf :NERDTree <CR>
 map <leader>ga <Action>(GotoAction)                             | " Open Command pallet
 map <leader>gp <Action>(ActivateProjectToolWindow)              | " Open the file structure
 
