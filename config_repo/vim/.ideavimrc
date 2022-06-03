@@ -53,7 +53,7 @@ set idearefactormode=visual
 " Number of lines to show above and below cursor. Useful for using ctrl + U/D
 set scrolloff=15
 " Set relative paths
-set relativenumber
+" set relativenumber
 
 " ##################################################################################################
 " ------ Modify Search Behaviors -------
@@ -91,59 +91,78 @@ nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 
 " Code Blocks; "pane block-open" "pane block-close" "pane global-block-open"
-map <leader>po <Action>(ExpandRegionRecursively)                | " Open fold
-map <leader>pc <Action>(CollapseRegionRecursively)              | " Close fold
+" Open fold
+map <leader>po <Action>(ExpandRegionRecursively)
 
-map <leader>pgo <Action>(ExpandAllRegions)                      | " Open ALL folds
-map <leader>pgc <Action>(CollapseAllRegions)                    | " Close ALL folds
+" Close fold
+map <leader>pc <Action>(CollapseRegionRecursively)
+
+" Open ALL folds
+map <leader>pgo <Action>(ExpandAllRegions)
+
+" Close ALL folds
+map <leader>pgc <Action>(CollapseAllRegions)
 
 " Enable zen mode
-map <leader>pz <Action>(ToggleDistractionFreeMode)              | " Toggle zen mode
+map <leader>pz <Action>(ToggleDistractionFreeMode)
 
 " ##################################################################################################
 " ------ G: GoTo - These commands open up GUI elements -------
 
 " Opening Tool Windows
-map <leader>g1 <Action>(ActivateRunToolWindow)                  | " Open the run window
-map <leader>g2 <Action>(ActivateDebugToolWindow)                | " Open the debug window
-map <leader>gt <Action>(ActivateTerminalToolWindow)             | " Open the terminal
-map <leader>gc <Action>(ActivateCommitToolWindow)               | " Open the commit modal
-map <leader>gd <Action>(ActivateDatabaseToolWindow)             | " Open the database window
-map <leader>gy <Action>(ActivatePythonConsoleToolWindow)        | " Open iPython window
-map <leader>go <Action>(ActivateTODOToolWindow)                 | " Open todo window
-map <leader>gv <Action>(ActivateVersionControlToolWindow)       | " Open version control (the git button)
+map <leader>g1 <Action>(ActivateRunToolWindow)
+map <leader>g2 <Action>(ActivateDebugToolWindow)
+map <leader>gt <Action>(ActivateTerminalToolWindow)
+map <leader>gc <Action>(ActivateCommitToolWindow)
+map <leader>gd <Action>(ActivateDatabaseToolWindow)
+map <leader>gy <Action>(ActivatePythonConsoleToolWindow)
+map <leader>go <Action>(ActivateTODOToolWindow)
+map <leader>gv <Action>(ActivateVersionControlToolWindow)
 map <leader>gm <Action>(ActivateMessagesToolWindow)
 map <leader>gx <Action>(BuildMenu)
 
 " Search Box; The all is opened with shift + shift on all platforms
-map <leader>gf <Action>(GotoFile)                               | " Open file fuzzy finder
+map <leader>gf <Action>(GotoFile)
 map gf :NERDTree <CR>
-map <leader>ga <Action>(GotoAction)                             | " Open Command pallet
-map <leader>gp <Action>(ActivateProjectToolWindow)              | " Open the file structure
+map <leader>ga <Action>(GotoAction)
+map <leader>gp <Action>(ActivateProjectToolWindow)
 
 " Open Sub Menus
-map <leader>ghl <Action>(RecentLocations)                       | " Open the last places you changed code
-map <leader>ghk <Action>(LocalHistory.ShowHistory)              | " Open time based window with all your changes
-map <leader>gb <Action>(ViewBreakpoints)                        | " Open all the breakpoints set
+    " Open the last places you changed code
+map <leader>ghl <Action>(RecentLocations)
+
+    " Open time based window with all your changes
+map <leader>ghk <Action>(LocalHistory.ShowHistory)
+
+map <leader>gb <Action>(ViewBreakpoints)
 
 
 " ##################################################################################################
 " ------ Code Editing Behaviors -------
 
 " Edit code
-map <leader>eo <Action>(OptimizeImports)                        | " Optimize the imports by removing those not used
-map <leader>ef <Action>(ReformatCode)                           | " Refactor the file or selected
-map <leader>es <Action>(SurroundWith)                           | " Open submenu for picking what to add for, while, if
-map <leader>er <Action>(Refactorings.QuickListPopupAction)      | " Open menu for refactoring
+map <leader>eo <Action>(OptimizeImports)
+map <leader>ef <Action>(ReformatCode)
+map <leader>es <Action>(SurroundWith)
+map <leader>er <Action>(Refactorings.QuickListPopupAction)
 
 
 " ##################################################################################################
 " ------ View Information About The Code
-map <leader>vu <Action>(FindUsages)                             | " View all the calls to it
-map <leader>vd <Action>(QuickJavaDoc)                           | " View docstrings
-map <leader>vi <Action>(QuickImplementations)                   | " View code of function
-map <leader>vp <Action>(ParameterInfo)                          | " Quick look at the parameters of the function
-map <leader>vr <Action>(ChooseRunConfiguration)                 | " Select a run configuration
+" View all the calls to it
+map <leader>vu <Action>(FindUsages)
+
+" View docstrings
+map <leader>vd <Action>(QuickJavaDoc)
+
+" View code of function
+map <leader>vi <Action>(QuickImplementations)
+
+" Quick look at the parameters of the function
+map <leader>vp <Action>(ParameterInfo)
+
+" Select a run configuration
+map <leader>vr <Action>(ChooseRunConfiguration)
 map <leader>vh <Action>(ViewCallHierarchy)
 map <leader>vb <Action>(ByteCodeViewer)
 
@@ -155,7 +174,7 @@ map <leader>jt <Action>(GotoTest)
 map <leader>jl <Action>(Forward)
 map <leader>jh <Action>(Back)
 map <leader>jp <Action>(NewScratchFile)
-map <leader>js <Action>(FileStructurePopup)                     | " Open up the structure of the code such as symbols
+map <leader>js <Action>(FileStructurePopup)
 
 " ##################################################################################################
 " ------ Code Execution -------
