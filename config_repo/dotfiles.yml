@@ -22,6 +22,11 @@ dotfiles:
         deployment_fpath: "~/.config/nvim/init.vim"
         storage_path: "${S_ROOT}"
 
+    - nvim_plugs:
+        # Vim file for nvim plug mappings to deconflict with ideavim
+        deployment_fpath: "~/.config/nvim/plugin/plug_maps.vim"
+        storage_path: "${S_ROOT}"
+  
     - ideavimrc_jetbrains:
         # This vimrc is for JetBrain IDEs currently tested for PyCharm and CLion
         deployment_fpath: "~/.ideavimrc"
