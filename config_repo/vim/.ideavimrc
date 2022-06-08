@@ -52,8 +52,9 @@ set idearefactormode=visual
 
 " Number of lines to show above and below cursor. Useful for using ctrl + U/D
 set scrolloff=15
-" Set relative paths
-" set relativenumber
+Set relative paths
+set number relativenumber
+
 
 " ##################################################################################################
 " ------ Modify Search Behaviors -------
