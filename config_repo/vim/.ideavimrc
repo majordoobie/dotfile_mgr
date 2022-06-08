@@ -9,64 +9,27 @@
 
 " ##################################################################################################
 " ------ Global Changes ------
+source ~/.config/nvim/plugin/set.vim
+source ~/.config/nvim/init.vim
+
 " Set nerd tree
 set NERDTree
-
-" Leader key is the spacebar
-let mapleader = " "
+set multiple-cursors
 
 " Don't use Ex mode, use Q for formatting.
 map Q gq
-
-" Allow the use of the normal copy buffer
-set clipboard+=unnamed
-set clipboard+=ideaput
-
+ 
 " Free the ctrl + k key binding that the IDE uses
 sethandler <c-k> a:vim
 
 " Quickly reload vimrc
 nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
 
-" Put x/r into the black hole register so they don't get copied. So if I want
-" to cut a paste, use select + d. If I just want to delete use select + x
-nnoremap x "_x
-nnoremap r "_r
-
-" Map the indentation to work with the group indentation
-vnoremap < <gv
-vnoremap > >gv
-
-"^$ The symbol is too hard to press
-map gh ^
-map gl $
-
 " Join things together like comments and method chaining. Activated with shift+j
 set ideajoin
 
 " When refactoring, what vim mode should you be in. Visual allows you to quickly delete or esp to edit
 set idearefactormode=visual
-
-" ##################################################################################################
-" ------ Modify Scrolling Behaviors -------
-
-" Number of lines to show above and below cursor. Useful for using ctrl + U/D
-set scrolloff=15
-Set relative paths
-set number relativenumber
-
-
-" ##################################################################################################
-" ------ Modify Search Behaviors -------
-
-" Do incremental searching.
-set incsearch
-" Highlight search results
-set hlsearch
-" Wrap around the file when searching
-set wrapscan
-" Map the enter key to CLEAR the highlight from the last search
-nnoremap <CR> :noh<CR><CR>
 
 
 " ##################################################################################################
@@ -124,7 +87,7 @@ map <leader>gx <Action>(BuildMenu)
 
 " Search Box; The all is opened with shift + shift on all platforms
 map <leader>gf <Action>(GotoFile)
-map gf :NERDTree <CR>
+map gf :NERDTreeToggle <CR>
 map <leader>ga <Action>(GotoAction)
 map <leader>gp <Action>(ActivateProjectToolWindow)
 
@@ -152,9 +115,6 @@ map <leader>er <Action>(Refactorings.QuickListPopupAction)
 " ------ View Information About The Code
 " View all the calls to it
 map <leader>vu <Action>(FindUsages)
-
-" View docstrings
-map <leader>vd <Action>(QuickJavaDoc)
 
 " View code of function
 map <leader>vi <Action>(QuickImplementations)
@@ -186,9 +146,8 @@ map <leader>bb <Action>(ToggleLineBreakpoint)
 map <leader>br <Action>(Debugger.RemoveAllBreakpoints)
 
 
-
-
-
-
-
-
+" Selecting multiple words
+nmap <C-n> <Plug>NextWholeOccurrence
+xmap <C-n> <Plug>NextWholeOccurrence
+nmap <C-x> <Plug>SkipOccurrence
+xmap <C-x> <Plug>SkipOccurrence

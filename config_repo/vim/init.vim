@@ -2,37 +2,55 @@
 " This uses the plug manager for managing plug-ins. The following call will
 " make sure that the file is called.
 
-set nocompatible		" be iMproved, required
-filetype off		        " required
 
-call plug#begin('~/.config/nvim/plugged')  	" this stores all the plugins downloaded
 
-Plug 'morhetz/gruvbox'		        	" Installs the theme
-Plug 'tpope/vim-fugitive'			" Git wrapper
-Plug 'preservim/nerdtree'			" File explorer
-Plug 'ctrlpvim/ctrlp.vim' 			" Fuzzy for finding files with ctrl-p
-Plug 'neoclide/coc.nvim', {'branch': 'release'}	" syntax highlighting
+call plug#begin('~/.config/nvim/autoload')  	" this stores all the plugins downloaded
+Plug 'gruvbox-community/gruvbox'
+Plug 'preservim/nerdtree'
+
+" Native LSP
+Plug 'neovim/nvim-lspconfig'
+
+" Both needed for telescope
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-lua/plenary.nvim'
+
+" CoC
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 call plug#end()	" Above is where all the plug commands go
 
-colorscheme gruvbox				" set the theme
-map <silent> <C-n> :NERDTreeFocus<CR>		" Set the nerd tree focus to ctrl + n use :q to exit it
+" set the theme
+colorscheme gruvbox
 
-filetype plugin indent on
-syntax on
-set ruler                       " Show the line and column numbers of the cursor.
+" Set leader
+let mapleader=" "
 
-set colorcolumn=80				" set visual line length
-" set textwidth=80                " Hard-wrap long lines as you type them.
+"""""""""""""""""""""""""""""""""""""""""""""""""""" Buffer settings
+set clipboard+=unnamed
 
-set background=dark
-highlight ColorColumn ctermbg=0 guibg=lightgrey
-set number
-set smartcase
-set hlsearch
-set noerrorbells
-set tabstop=4 softtabstop=4
-set expandtab
-set smartindent
+" Place x and r into black hole instead of the unnamed registers to forget
+" them
+nnoremap x "_x
+nnoremap r "_r
+nnoremap <leader>d "_d
+vnoremap <leader>d "_d
 
+" Copy and paste from global clipboard
+nnoremap yy "+yy
+vnoremap y "+y
+
+nnoremap p "+p
+vnoremap p "+p
+nnoremap P "+P
+vnoremap P "+P
+
+
+" Map the indentation to work with the group indentation
+vnoremap < <gv
+vnoremap > >gv
+
+"^$ The symbol is too hard to press
+map gh ^
+map gl $
 
