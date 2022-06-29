@@ -2,11 +2,13 @@ import argparse
 import filecmp
 import importlib.util
 import json
+import pathlib
 import shutil
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
 from typing import List, Optional
+from itertools import groupby
 
 SELF_PATH = Path(__file__).parents[0]
 CONFIG_REPO = SELF_PATH / "config_repo"
@@ -191,9 +193,59 @@ class DeploymentObject:
                 print(error)
 
 
+def _create_config(directory: pathlib.Path, d_unit_name: str) -> None:
+    # Expand if they are using tilda
+    directory = directory.expanduser()
+
+    # If not a directory, exit
+    if not directory.is_dir():
+        exit("Path passed is not a directory")
+
+    # Glob the directory for all the files that are actual files
+    files = \
+        sorted(
+            list(
+                map(
+                    lambda x: '~' / x.relative_to(Path.home()),
+                    filter(
+                        lambda x: x.is_file(),
+                        directory.glob("**/*")
+                    )
+                )
+            ),
+            key=lambda x: x.name
+        )
+
+    # Calculate if any of the config files are duplicates, if so, change their
+    # name to avoid duplicate to avoid duplicate deployment object names
+    dupe_dict = {}
+    for dupe, count in groupby(files, key=lambda x: x.name):
+        count = len(list(count))
+        if count > 1:
+            dupe_dict[dupe] = count
+
+    # Printout the config made
+    config = f"  {d_unit_name}:\n"
+    for deploy_obj in files:
+        d_name = deploy_obj.stem
+        if dupe_dict.get(deploy_obj.name) and dupe_dict.get(deploy_obj.name) > 0:
+            d_name = f"{d_name}_{dupe_dict.get(deploy_obj.name)}"
+            dupe_dict[deploy_obj.name] -= 1
+
+        config += (
+              f"    - {d_name}:\n"
+              f"        deployment_fpath: {deploy_obj}\n"
+              f"        storage_path: {STORAGE_PREFIX}\n")
+    print(config)
+
+
 def main():
     # Get command line arguments
     args = _get_args()
+
+    if args.create_config:
+        _create_config(args.create_config, "NeoVim")
+        exit()
 
     # Parse the config to make sure that it is a valid json
     try:
@@ -331,9 +383,9 @@ def _get_deployments(config: dict) -> List[DeploymentObject]:
                     STORAGE_PATH_K) else False
 
                 # Storage string
-                storage_string = obj_paths.get(
-                    STORAGE_PATH_K) if obj_paths.get(
-                    STORAGE_PATH_K) else obj_paths.get(STORAGE_FPATH_K)
+                storage_string = obj_paths.get(STORAGE_PATH_K) \
+                    if obj_paths.get(STORAGE_PATH_K) \
+                    else obj_paths.get(STORAGE_FPATH_K)
 
                 # Append a new DO object to the deployments list
                 deployments.append(DeploymentObject(
@@ -378,6 +430,13 @@ def _get_args() -> argparse.Namespace:
         action="store_true",
         dest="deploy_configs",
         default=False
+    )
+    group.add_argument(
+        "--create_config",
+        help="Help create a deployment unit by globbing the directory "
+             "specified",
+        dest="create_config",
+        type=pathlib.Path,
     )
 
     return parser.parse_args()
