@@ -1,0 +1,3 @@
+-- Config for configuring telescope
+
+

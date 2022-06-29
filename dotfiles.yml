@@ -20,6 +20,34 @@ dotfiles:
         # This vimrc is for JetBrain IDEs currently tested for PyCharm and CLion
         deployment_fpath: "~/.ideavimrc"
         storage_path: "${S_ROOT}"
+  NeoVim:
+    - init_2:
+        deployment_fpath: ~/.config/nvim/init.lua
+        storage_path: ${S_ROOT}
+    - init_1:
+        deployment_fpath: ~/.config/nvim/lua/majordoobie/init.lua
+        storage_path: ${S_ROOT}
+    - keymap:
+        deployment_fpath: ~/.config/nvim/lua/majordoobie/keymap.lua
+        storage_path: ${S_ROOT}
+    - keymappings:
+        deployment_fpath: ~/.config/nvim/after/plugin/keymappings.lua
+        storage_path: ${S_ROOT}
+    - packer:
+        deployment_fpath: ~/.config/nvim/plugin/packer.lua
+        storage_path: ${S_ROOT}
+    - packer_compiled:
+        deployment_fpath: ~/.config/nvim/plugin/packer_compiled.lua
+        storage_path: ${S_ROOT}
+    - set:
+        deployment_fpath: ~/.config/nvim/lua/majordoobie/set.lua
+        storage_path: ${S_ROOT}
+    - telescope:
+        deployment_fpath: ~/.config/nvim/plugin/telescope.lua
+        storage_path: ${S_ROOT}
+    - telescope_mappings:
+        deployment_fpath: ~/.config/nvim/after/plugin/telescope_mappings.lua
+        storage_path: ${S_ROOT}
 
   karabiner_elements:
     - karabiner_conf:

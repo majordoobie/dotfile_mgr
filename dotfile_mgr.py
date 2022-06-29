@@ -84,7 +84,7 @@ class DeploymentObject:
         :return:
         """
         # Check if config calls for using the storage directory
-        if self.storage_path.startswith(STORAGE_PREFIX):
+        if self.storage_path == STORAGE_PREFIX:
 
             # Create the base directory for this deployment obj
             self._storage_path = CONFIG_REPO / self.deployment_unit
@@ -318,28 +318,26 @@ def main():
         _clean_up()
         exit()
 
+    deployments = None
     try:
         deployments = _parse_config()
     except Exception as error:
         exit(error)
-
-    # try:
-    #     deployments = _parse_config()
-    # except FileNotFoundError as error:
-    #     exit(error)
 
     # If fetch
     if args.fetch_configs:
         for deployment in deployments:
             deployment.fetch_config()
 
-        # Check to see if there is anything out of sync and send a warning
-        out_of_sync = "\t-> " + "\n\t-> ".join(path.name for path in _get_out_of_sync())
-        if out_of_sync:
-            print(f"\n[!] The following deploy units are out of "
-                  f"sync:\n{out_of_sync}\n"
-                  f"\nIf you would like to clean them up then run the clean "
-                  f"command")
+        clean_up = _get_out_of_sync()
+        if clean_up:
+            # Check to see if there is anything out of sync and send a warning
+            out_of_sync = "\t-> " + "\n\t-> ".join(path.name for path in clean_up)
+            if out_of_sync:
+                print(f"\n[!] The following deploy units are out of "
+                      f"sync:\n{out_of_sync}\n"
+                      f"\nIf you would like to clean them up then run the clean "
+                      f"command")
 
     elif args.deploy_configs:
         for deployment in deployments:
