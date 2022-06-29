@@ -15,18 +15,7 @@ dotfiles:
         deployment_fpath: "~/.config/yabai/yabairc"
         storage_path: "${S_ROOT}"
 
-  vim:
-    - nvim_rc:
-        # I use COC with some plugins for basic terminal
-        # configurations
-        deployment_fpath: "~/.config/nvim/init.vim"
-        storage_path: "${S_ROOT}"
-
-    - nvim_plugs:
-        # Vim file for nvim plug mappings to deconflict with ideavim
-        deployment_fpath: "~/.config/nvim/plugin/plug_maps.vim"
-        storage_path: "${S_ROOT}"
-  
+  ideavim:
     - ideavimrc_jetbrains:
         # This vimrc is for JetBrain IDEs currently tested for PyCharm and CLion
         deployment_fpath: "~/.ideavimrc"

@@ -1,3 +1,5 @@
+"""
+"""
 import argparse
 import filecmp
 import importlib.util
@@ -194,6 +196,14 @@ class DeploymentObject:
 
 
 def _create_config(directory: pathlib.Path, d_unit_name: str) -> None:
+    """
+    Parse the given directory to generate a recommended configuration for the
+    files found in the directory.
+
+    :param directory:
+    :param d_unit_name:
+    :return:
+    """
     # Expand if they are using tilda
     directory = directory.expanduser()
 
@@ -228,38 +238,108 @@ def _create_config(directory: pathlib.Path, d_unit_name: str) -> None:
     config = f"  {d_unit_name}:\n"
     for deploy_obj in files:
         d_name = deploy_obj.stem
-        if dupe_dict.get(deploy_obj.name) and dupe_dict.get(deploy_obj.name) > 0:
+        if dupe_dict.get(deploy_obj.name) and dupe_dict.get(
+                deploy_obj.name) > 0:
             d_name = f"{d_name}_{dupe_dict.get(deploy_obj.name)}"
             dupe_dict[deploy_obj.name] -= 1
 
         config += (
-              f"    - {d_name}:\n"
-              f"        deployment_fpath: {deploy_obj}\n"
-              f"        storage_path: {STORAGE_PREFIX}\n")
+            f"    - {d_name}:\n"
+            f"        deployment_fpath: {deploy_obj}\n"
+            f"        storage_path: {STORAGE_PREFIX}\n")
     print(config)
+
+
+def _get_out_of_sync() -> List[pathlib.Path]:
+    # Parse the config to make sure that it is a valid json
+    config = None
+    try:
+        config = _parse_config()
+    except Exception as error:
+        exit(error)
+
+    # Scan the config repo to see what are the available deployment units
+    return list(
+        map(
+            lambda dir_name: CONFIG_REPO / dir_name,
+            filter(
+                lambda x: x not in (d_unit.deployment_unit for d_unit in config),
+                (dir.name for dir in CONFIG_REPO.iterdir() if dir.is_dir())
+            )
+        )
+    )
+
+
+def _clean_up() -> None:
+    """
+    Attempt to remove any Deployment Unit directories that no longer exist in
+    the configuration file
+
+    :return:
+    """
+    for item in _get_out_of_sync():
+        print(f"[+] Deleting {item}")
+        shutil.rmtree(item)
+
+
+def _parse_config(config: dict = None) -> List[DeploymentObject]:
+    """
+    Parse the configuration dict from config parameter or from disk and convert
+    the configuration into a list of :py:class:`DeploymentObjects`
+
+    :param config: optional dict to parse instead of parsing from disk
+    :type config: dict or None
+    :raises:`ValueError`: if dictionary is invalid
+    :raises ModuleNotFoundError: if yaml module is used and not installed
+    :raises OSError: if any I/O error is encountered when reading from disk
+    :raises FileNotFoundError: if any of the configs are not found
+    :return: List of deployment objects
+    :rtype: List[DeploymentObject]
+    """
+    try:
+        config_file = _get_config(config)
+    except Exception:
+        raise
+
+    return _get_deployments(config_file)
 
 
 def main():
     # Get command line arguments
     args = _get_args()
 
-    if args.create_config:
-        _create_config(args.create_config, "NeoVim")
+    # Create configs and exit
+    if args.generate:
+        _create_config(args.create_config, args.d_name)
         exit()
 
-    # Parse the config to make sure that it is a valid json
+    # Clean up repo and exit
+    if args.clean_up:
+        _clean_up()
+        exit()
+
     try:
-        config_file = _get_config(None)
-    except ValueError as error:
+        deployments = _parse_config()
+    except Exception as error:
         exit(error)
 
-    # Get list of deployment objects
-    deployments = _get_deployments(config_file)
+    # try:
+    #     deployments = _parse_config()
+    # except FileNotFoundError as error:
+    #     exit(error)
 
     # If fetch
     if args.fetch_configs:
         for deployment in deployments:
             deployment.fetch_config()
+
+        # Check to see if there is anything out of sync and send a warning
+        out_of_sync = "\t-> " + "\n\t-> ".join(path.name for path in _get_out_of_sync())
+        if out_of_sync:
+            print(f"\n[!] The following deploy units are out of "
+                  f"sync:\n{out_of_sync}\n"
+                  f"\nIf you would like to clean them up then run the clean "
+                  f"command")
 
     elif args.deploy_configs:
         for deployment in deployments:
@@ -268,14 +348,19 @@ def main():
 
 def _get_config_file() -> dict:
     """
-    Function attempts to iterate over the possible configuration
-    file names. If no matches are found, raise an exception.
-    :return:
+    Attempt to read all possible configuration names and type. If found, parse
+    type and return the data. The types supported are either yaml or json
+
+    :return: Dictionary containing the data parsed from the configuration file
+    :rtype: dict
+    :raises ModuleNotFoundError: if yaml module is used and not installed
+    :raises OSError: if any I/O error is encountered when reading from disk
+    :raises FileNotFoundError: if any of the configs are not found
     """
     paths = (
-        (ConfigType.JSON, CONFIG_PATH / JSON_FILE),
-        (ConfigType.YAML, CONFIG_PATH / YAML_FILES[0]),
-        (ConfigType.YAML, CONFIG_PATH / YAML_FILES[1])
+        (ConfigType.JSON, Path(JSON_FILE)),
+        (ConfigType.YAML, Path(YAML_FILES[0])),
+        (ConfigType.YAML, Path(YAML_FILES[1]))
     )
     for path in paths:
         if path[1].exists():
@@ -294,8 +379,8 @@ def _get_config_file() -> dict:
                                 f"import the PyYAML module. Please install the"
                                 f" module using the requirements.txt file"
                             )
-            except Exception as error:
-                exit(error)
+            except OSError:
+                raise
 
     # If no files can be found, then exit
     raise FileNotFoundError(f"[!] There is no config file available at "
@@ -304,17 +389,24 @@ def _get_config_file() -> dict:
 
 def _get_config(config: Optional[dict]) -> dict:
     """
-    Iterate over the json file to first ensure that the file is VALID.
-    A valid configuration is one that has the root key of `ROOT_JSON`
-    and has at least one `deployment unit` where each `deployment unit`
-    is a list of `deployment objects` each containing at most two keys,
-    the `deployment` path and `storage` path.
+    Parses deployment configuration and returns a :py:class:`dict`. A valid
+    deployment configuration is one that hsa the root key of
+    :py:class:`ROOT_JSON`
 
+    :param config: optional dict to parse instead of parsing from disk
+    :type config: dict or None
     :return: Dictionary containing the configuration for fetching dotfiles
     :rtype: dict
+    :raises:`ValueError`: if dictionary is invalid
+    :raises ModuleNotFoundError: if yaml module is used and not installed
+    :raises OSError: if any I/O error is encountered when reading from disk
+    :raises FileNotFoundError: if any of the configs are not found
     """
     if config is None:
-        config = _get_config_file()
+        try:
+            config = _get_config_file()
+        except Exception:
+            raise
 
     # First test if the root key is present. If it is not, exit
     if not config.get(ROOT_JSON):
@@ -416,7 +508,7 @@ def _get_args() -> argparse.Namespace:
                      "the git repo.")
     )
 
-    group = parser.add_mutually_exclusive_group(required=True)
+    group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument(
         "--fetch_configs",
         help="Fetch config files specified in the %(prog)s config",
@@ -432,11 +524,41 @@ def _get_args() -> argparse.Namespace:
         default=False
     )
     group.add_argument(
-        "--create_config",
-        help="Help create a deployment unit by globbing the directory "
-             "specified",
+        "--clean_up",
+        "-c",
+        help="Remove Deployment Units from the repo if they are no longer"
+             "in the configuration file.",
+        action="store_true",
+        dest="clean_up",
+        default=False
+    )
+    subparser = parser.add_subparsers(
+        dest="generate",
+        title="Config Generation Commands",
+        help="Automate creating configuration output by providing a directory"
+    )
+
+    sub_create_config = subparser.add_parser("generate")
+    sub_create_config.add_argument(
+        "--directory",
+        "-d",
         dest="create_config",
         type=pathlib.Path,
+        metavar="",
+        help="Create configuration output for the specified directory. This "
+             "comes in handy when having to write configurations for a "
+             "directory with multiple files like a NeoVim configuration setup. "
+             "By providing the root directory, the command will output the "
+             "suggested configuration for that deployment unit."
+    )
+    sub_create_config.add_argument(
+        "--deployment_name",
+        "-n",
+        dest="d_name",
+        type=str,
+        metavar="",
+        help="Name of deployment unit key",
+        required=True
     )
 
     return parser.parse_args()

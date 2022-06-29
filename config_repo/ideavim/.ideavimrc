@@ -1,4 +1,4 @@
-" ------ Sources ------
+
 " https://amine-elhattami.medium.com/destination-ideavim-day-1-the-basics-793a514af57f
 " https://towardsdatascience.com/the-essential-ideavim-remaps-291d4cd3971b
 " https://github.com/JetBrains/ideavim/wiki/%22set%22-commands
@@ -8,17 +8,80 @@
 
 
 " ##################################################################################################
-" ------ Global Changes ------
-source ~/.config/nvim/plugin/set.vim
-source ~/.config/nvim/init.vim
+" Modify tabs
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set expandtab
+set smartindent
+
+" Set number column
+set relativenumber
+set number
+
+" Set show modes
+set showmode
+set showcmd
+
+" Fix the search highlight
+set incsearch
+set hlsearch
+set wrapscan
+set nowrap
+highlight ColorColumn ctermbg=0 guibg=lightgrey
+nnoremap <CR> :noh<CR><CR>
+
+" Keep buffer alive in the background if you leave it
+set hidden
+
+" column add
+set signcolumn=yes
+set colorcolumn=80
+set ruler
+
+" misc
+set scrolloff=15
+set cmdheight=2
+set updatetime=300
+
+""""""""""""""""""""""""""""""" Mappings
+let mapleader=" "
+
+"""""""""""""""""""""""""""""" Modify copy and paste
+" Paste from global
+nnoremap <leader>p "+p
+xnoremap <leader>p "+p
+
+" Copy into global
+nnoremap <leader>y "+y
+xnoremap <leader>y "+y
+
+" Delete into black hole
+nnoremap <leader>d "_d
+xnoremap <leader>d "_d
+
+" Set x and r to black hole
+nnoremap x "_x
+xnoremap x "_x
+nnoremap r "_r
+xnoremap r "_r
+
+" Map the indentation to work with the group indentation
+vnoremap < <gv
+vnoremap > >gv
+
+"^$ The symbol is too hard to press
+map gh ^
+map gl $
+
+
+" ------ JetBrain Settings  ------
+
 
 " Set nerd tree
 set NERDTree
 set multiple-cursors
 
-" Don't use Ex mode, use Q for formatting.
-map Q gq
- 
 " Free the ctrl + k key binding that the IDE uses
 sethandler <c-k> a:vim
 
@@ -49,10 +112,15 @@ map <Leader>qq <Action>(CloseContent)
 map <Leader>qa <Action>(CloseAllEditors)
 
 " Sets hjkl as pane movement keys
-nnoremap <c-h> <c-w>h
-nnoremap <c-l> <c-w>l
-nnoremap <c-j> <c-w>j
-nnoremap <c-k> <c-w>k
+"nnoremap <c-h> <c-w>h
+"nnoremap <c-l> <c-w>l
+"nnoremap <c-j> <c-w>j
+"nnoremap <c-k> <c-w>k
+
+nnoremap <leader>h <c-w>h
+nnoremap <leader>l <c-w>l
+nnoremap <leader>j <c-w>j
+nnoremap <leader>k <c-w>k
 
 " Code Blocks; "pane block-open" "pane block-close" "pane global-block-open"
 " Open fold
@@ -87,7 +155,7 @@ map <leader>gx <Action>(BuildMenu)
 
 " Search Box; The all is opened with shift + shift on all platforms
 map <leader>gf <Action>(GotoFile)
-map gf :NERDTreeToggle <CR>
+map gf :NERDTreeFocus <CR>
 map <leader>ga <Action>(GotoAction)
 map <leader>gp <Action>(ActivateProjectToolWindow)
 
@@ -121,6 +189,7 @@ map <leader>vi <Action>(QuickImplementations)
 
 " Quick look at the parameters of the function
 map <leader>vp <Action>(ParameterInfo)
+map <leader>vd <Action>(QuickJavaDoc)
 
 " Select a run configuration
 map <leader>vr <Action>(ChooseRunConfiguration)

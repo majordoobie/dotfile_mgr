@@ -117,6 +117,7 @@ source $ZSH/oh-my-zsh.sh
 alias ll='ls -lAh --color=auto'
 alias vim='nvim'
 alias code='cd ~/OneDrive/Cybernetic/active_projects'
+alias kill_logi='python3 ~/OneDrive/Cybernetic/active_projects/mac_scripts/restart_logi.py'
 export EDITOR='nvim'
 export HOME_KEY='/Users/anker/Library/CloudStorage/OneDrive-Personal/keys'
 

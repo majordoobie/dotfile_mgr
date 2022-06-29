@@ -76,7 +76,6 @@ yabai -m rule --add app="^Path Finder$" manage=off
 yabai -m rule --add app="^TeamViewer$" sticky=off layer=above manage=off
 yabai -m rule --add app="Fantastical" manage=off
 yabai -m rule --add app="^Spotify$" manage=off
-yabai -m rule --add app="^iTerm2$" manage=off
 yabai -m rule --add app="^Flux$" manage=off
 yabai -m rule --add app="^Time Out$" manage=off
 yabai -m rule --add app="^perl_client_app$" manage=off
@@ -87,6 +86,7 @@ yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Cisco Webex Start$" manage=off
 yabai -m rule --add app="^Private Internet Access$" manage=off
 yabai -m rule --add app="^Photos$" manage=off
+yabai -m rule --add app="^FaceTime$" manage=off
 yabai -m rule --add app="iStat Menus.*" manage=off mouse_follows_focus=off
 yabai -m rule --add title="JetBrains Toolbox" manage=off mouse_follows_focus=off
 yabai -m rule --add title="App Store" manage=off mouse_follows_focus=off
