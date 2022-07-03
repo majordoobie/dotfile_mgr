@@ -84,13 +84,13 @@ class DeploymentObject:
         :return:
         """
         # Check if config calls for using the storage directory
-        if self.storage_path == STORAGE_PREFIX:
+        if self.storage_path.startswith(STORAGE_PREFIX):
 
             # Create the base directory for this deployment obj
             self._storage_path = CONFIG_REPO / self.deployment_unit
 
             # Now append the reset of the path
-            path_string = self.storage_path.lstrip(STORAGE_PREFIX)
+            path_string = self.storage_path.lstrip(STORAGE_PREFIX + "/")
             self._storage_path = self._storage_path / path_string
 
             # If storage path, just mkdir, else we need to strip, then mkdir
@@ -139,8 +139,8 @@ class DeploymentObject:
                   f"{storage_file} does not exist")
             return
 
-        # Check that the contents have not change, if they have
-        # then go ahead and copy. The filecmp does a byte byte
+        # Check that the contents have not changed, if they have
+        # then go ahead and copy. The file cmp does a byte by byte
         # comparison instead of a hash
         do_copy = True
         if file_exists:
@@ -238,15 +238,23 @@ def _create_config(directory: pathlib.Path, d_unit_name: str) -> None:
     config = f"  {d_unit_name}:\n"
     for deploy_obj in files:
         d_name = deploy_obj.stem
+        storage_path = STORAGE_PREFIX
+
+        # If this is a duplicated name, append a char to make it unique
         if dupe_dict.get(deploy_obj.name) and dupe_dict.get(
                 deploy_obj.name) > 0:
-            d_name = f"{d_name}_{dupe_dict.get(deploy_obj.name)}"
+
+            # Since there is a dupe, create a file name of the parent dir and
+            # the file itself. This should always be unique since you cannot
+            # have two files of the same name in the same directory
+            d_name = "_".join(deploy_obj.parts[-2:]).split(".")[0]
+            storage_path = f"{storage_path}/{d_name}"
             dupe_dict[deploy_obj.name] -= 1
 
         config += (
             f"    - {d_name}:\n"
-            f"        deployment_fpath: {deploy_obj}\n"
-            f"        storage_path: {STORAGE_PREFIX}\n")
+            f"        deployment_fpath: \"{deploy_obj}\"\n"
+            f"        storage_path: \"{storage_path}\"\n")
     print(config)
 
 
