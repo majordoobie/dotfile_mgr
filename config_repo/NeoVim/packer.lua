@@ -28,6 +28,9 @@ return require('packer').startup(function()
     -- https://github.com/mg979/vim-visual-multi/wiki/Mappings
     use("mg979/vim-visual-multi")
 
+    -- CoC
+    use {"neoclide/coc.nvim", branch = "release"}
+
     -- runs the boot strap if the variable exists (if git was cloned)
     if packer_bootstrap then
         require('packer').sync()

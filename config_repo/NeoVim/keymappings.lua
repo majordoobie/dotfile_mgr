@@ -15,6 +15,8 @@ nnoremap("gf", ":Ex<CR>")
 -- Change the ^ and $ to easier to type keys
 nmap("gh", "^")
 nmap("gl", "$")
+vmap("gh", "^")
+vmap("gl", "$")
 
 -- Update how indentation works
 vnoremap("<", "<gv")

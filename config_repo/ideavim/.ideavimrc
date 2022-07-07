@@ -164,7 +164,7 @@ map <leader>gp <Action>(ActivateProjectToolWindow)
 map <leader>ghl <Action>(RecentLocations)
 
     " Open time based window with all your changes
-map <leader>ghk <Action>(LocalHistory.ShowHistory)
+map <leader>vh <Action>(LocalHistory.ShowHistory)
 
 map <leader>gb <Action>(ViewBreakpoints)
 
@@ -193,7 +193,7 @@ map <leader>vd <Action>(QuickJavaDoc)
 
 " Select a run configuration
 map <leader>vr <Action>(ChooseRunConfiguration)
-map <leader>vh <Action>(ViewCallHierarchy)
+" map <leader>vh <Action>(ViewCallHierarchy)
 map <leader>vb <Action>(ByteCodeViewer)
 
 " ##################################################################################################

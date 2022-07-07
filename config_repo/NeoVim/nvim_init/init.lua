@@ -1,5 +1,6 @@
 print("inside majordoobie/init")
 require("majordoobie.set")
+-- comment
 
 -- Open file in current window
 vim.g.netrw_browse_split = 0

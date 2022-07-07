@@ -111,12 +111,10 @@ source $ZSH/oh-my-zsh.sh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 #
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
 alias ll='ls -lAh --color=auto'
 alias vim='nvim'
 alias code='cd ~/OneDrive/Cybernetic/active_projects'
+alias scratch='cd ~/OneDrive/Cybernetic/active_projects/scratch_pad'
 alias kill_logi='python3 ~/OneDrive/Cybernetic/active_projects/mac_scripts/restart_logi.py'
 export EDITOR='nvim'
 export HOME_KEY='/Users/anker/Library/CloudStorage/OneDrive-Personal/keys'
@@ -124,3 +122,4 @@ export HOME_KEY='/Users/anker/Library/CloudStorage/OneDrive-Personal/keys'
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
