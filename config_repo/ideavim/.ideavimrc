@@ -152,6 +152,8 @@ map <leader>go <Action>(ActivateTODOToolWindow)
 map <leader>gv <Action>(ActivateVersionControlToolWindow)
 map <leader>gm <Action>(ActivateMessagesToolWindow)
 map <leader>gx <Action>(BuildMenu)
+map <leader>gl <Action>(NextTab)
+map <leader>gh <Action>(PreviousTab)
 
 " Search Box; The all is opened with shift + shift on all platforms
 map <leader>gf <Action>(GotoFile)
@@ -159,12 +161,6 @@ map gf :NERDTreeFocus <CR>
 map <leader>ga <Action>(GotoAction)
 map <leader>gp <Action>(ActivateProjectToolWindow)
 
-" Open Sub Menus
-    " Open the last places you changed code
-map <leader>ghl <Action>(RecentLocations)
-
-    " Open time based window with all your changes
-map <leader>vh <Action>(LocalHistory.ShowHistory)
 
 map <leader>gb <Action>(ViewBreakpoints)
 
@@ -193,9 +189,10 @@ map <leader>vd <Action>(QuickJavaDoc)
 
 " Select a run configuration
 map <leader>vr <Action>(ChooseRunConfiguration)
-" map <leader>vh <Action>(ViewCallHierarchy)
 map <leader>vb <Action>(ByteCodeViewer)
 
+    " Open time based window with all your changes
+map <leader>vh <Action>(LocalHistory.ShowHistory)
 " ##################################################################################################
 " --- Jump To
 map <leader>jd <Action>(GotoDeclaration)
