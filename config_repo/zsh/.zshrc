@@ -115,8 +115,9 @@ alias ll='ls -lAh --color=auto'
 alias vim='nvim'
 alias code='cd ~/OneDrive/Cybernetic/active_projects'
 alias scratch='cd ~/OneDrive/Cybernetic/active_projects/scratch_pad'
-alias dotfiles='cd ~/OneDrive/Cybernetic/active_projects/dotfiles/'
-alias kill_logi='python3 ~/OneDrive/Cybernetic/active_projects/mac_scripts/restart_logi.py'
+kill_logi='python3 ~/OneDrive/Cybernetic/active_projects/mac_scripts/restart_logi.py'
+alias sync_dotfiles='zsh ~/OneDrive/Cybernetic/active_projects/dotfiles/sync_dotfiles.sh'
+
 export EDITOR='nvim'
 export HOME_KEY='/Users/anker/Library/CloudStorage/OneDrive-Personal/keys'
 
