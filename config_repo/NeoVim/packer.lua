@@ -31,6 +31,9 @@ return require('packer').startup(function()
     -- CoC
     use {"neoclide/coc.nvim", branch = "release"}
 
+    -- transparent
+    use("xiyaowong/nvim-transparent")
+
     -- runs the boot strap if the variable exists (if git was cloned)
     if packer_bootstrap then
         require('packer').sync()

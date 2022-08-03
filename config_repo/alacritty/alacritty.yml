@@ -82,13 +82,13 @@ font:
   normal:
     family: MesloLGS NF
   size: 20
-
+    
 shell:
   program: /bin/zsh
   args:
     - -l
     - -c
-    - "tmux attach-session -t chungus || tmux new-session -s chungus"
+    - "tmux attach -d -t chungus || tmux new-session -s chungus"
 
 key_bindings:
   - { key: N,        mods: Control|Shift,    action: SpawnNewInstance    }

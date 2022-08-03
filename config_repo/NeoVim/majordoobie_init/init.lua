@@ -1,4 +1,3 @@
-print("inside majordoobie/init")
 require("majordoobie.set")
 
 -- Open file in current window
@@ -9,3 +8,6 @@ vim.g.netrw_banner = 0
 vim.g.netrw_liststyle = 3
 -- Set width of window to 25%
 vim.g.netrw_winsize = 25
+--
+--transparent 
+vim.g.transparent_enabled = true

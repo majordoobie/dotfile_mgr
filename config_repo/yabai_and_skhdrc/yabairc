@@ -82,5 +82,8 @@ yabai -m rule --add title="JetBrains Toolbox" manage=off mouse_follows_focus=off
 yabai -m rule --add title="App Store" manage=off mouse_follows_focus=off
 yabai -m rule --add title="^Parallels$" manage=off
 yabai -m rule --add app="^CLion$" manage=off
+yabai -m rule --add app="^PyCharm$" manage=off
+yabai -m rule --add app="^Preview$" manage=off
+
 
 echo "yabai configuration loaded.."

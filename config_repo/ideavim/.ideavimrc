@@ -80,7 +80,7 @@ map gl $
 
 " Set nerd tree
 set NERDTree
-set multiple-cursors
+Plug 'terryma/vim-multiple-cursors'
 
 " Free the ctrl + k key binding that the IDE uses
 sethandler <c-k> a:vim
@@ -160,16 +160,15 @@ map <leader>gf <Action>(GotoFile)
 map gf :NERDTreeFocus <CR>
 map <leader>ga <Action>(GotoAction)
 map <leader>gp <Action>(ActivateProjectToolWindow)
-
-
 map <leader>gb <Action>(ViewBreakpoints)
+map <leader>gs <Action>(FindInPath)
 
 
 " ##################################################################################################
 " ------ Code Editing Behaviors -------
 
 " Edit code
-map <leader>eo <Action>(OptimizeImports)
+map <leader>ei <Action>(OptimizeImports)
 map <leader>ef <Action>(ReformatCode)
 map <leader>es <Action>(SurroundWith)
 map <leader>er <Action>(Refactorings.QuickListPopupAction)
@@ -211,9 +210,8 @@ map <leader>0 <Action>(Stop)
 map <leader>bb <Action>(ToggleLineBreakpoint)
 map <leader>br <Action>(Debugger.RemoveAllBreakpoints)
 
-
-" Selecting multiple words
-nmap <C-n> <Plug>NextWholeOccurrence
-xmap <C-n> <Plug>NextWholeOccurrence
-nmap <C-x> <Plug>SkipOccurrence
-xmap <C-x> <Plug>SkipOccurrence
+" Multi line selection
+map mc <A-n>
+map mx <A-x>
+map mp <A-p>
+map mg g<A-n>

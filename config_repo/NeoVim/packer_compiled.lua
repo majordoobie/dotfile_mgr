@@ -79,6 +79,11 @@ _G.packer_plugins = {
     path = "/Users/anker/.local/share/nvim/site/pack/packer/start/gruvbox.nvim",
     url = "https://github.com/ellisonleao/gruvbox.nvim"
   },
+  ["nvim-transparent"] = {
+    loaded = true,
+    path = "/Users/anker/.local/share/nvim/site/pack/packer/start/nvim-transparent",
+    url = "https://github.com/xiyaowong/nvim-transparent"
+  },
   ["nvim-treesitter"] = {
     loaded = true,
     path = "/Users/anker/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
