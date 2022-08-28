@@ -43,6 +43,7 @@ set ruler
 set scrolloff=15
 set cmdheight=2
 set updatetime=300
+set ideamarks=true
 
 """"""""""""""""""""""""""""""" Mappings
 let mapleader=" "
@@ -94,6 +95,8 @@ set ideajoin
 " When refactoring, what vim mode should you be in. Visual allows you to quickly delete or esp to edit
 set idearefactormode=visual
 
+set visualbell
+set noerrorbells
 
 " ##################################################################################################
 " ------ Pane Manipulation Behaviors -------
@@ -188,7 +191,7 @@ map <leader>vd <Action>(QuickJavaDoc)
 
 " Select a run configuration
 map <leader>vr <Action>(ChooseRunConfiguration)
-map <leader>vb <Action>(ByteCodeViewer)
+map <leader>vb <Action>(ShowBookmarks)
 
     " Open time based window with all your changes
 map <leader>vh <Action>(LocalHistory.ShowHistory)
