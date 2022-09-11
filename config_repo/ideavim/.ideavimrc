@@ -61,6 +61,9 @@ xnoremap <leader>y "+y
 nnoremap <leader>d "_d
 xnoremap <leader>d "_d
 
+" Delete line without updating buffer then paste
+xnoremap <leader>p "_dP
+
 " Set x and r to black hole
 nnoremap x "_x
 xnoremap x "_x

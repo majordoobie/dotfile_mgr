@@ -85,6 +85,7 @@ plugins=(
 	zsh-completions
 	zsh-syntax-highlighting
     fd
+    vi-mode
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -111,6 +112,9 @@ source $ZSH/oh-my-zsh.sh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 #
+VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
+VI_MODE_SET_CURSOR=true
+
 alias ll='ls -lAh --color=auto'
 alias vim='nvim'
 alias code='cd ~/code'

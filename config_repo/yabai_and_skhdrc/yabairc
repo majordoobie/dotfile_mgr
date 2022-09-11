@@ -84,6 +84,8 @@ yabai -m rule --add title="^Parallels$" manage=off
 yabai -m rule --add app="^CLion$" manage=off
 yabai -m rule --add app="^PyCharm$" manage=off
 yabai -m rule --add app="^Preview$" manage=off
+yabai -m rule --add app="^Calculator$" manage=off
+
 
 
 echo "yabai configuration loaded.."

@@ -2,6 +2,7 @@
 local Remap = require("majordoobie.keymap")
 local nnoremap = Remap.nnoremap
 local vnoremap = Remap.vnoremap
+local xnoremap = Remap.xnoremap
 local nmap = Remap.nmap
 local vmap = Remap.vmap
 
@@ -31,6 +32,8 @@ nnoremap("<leader>y", "\"+y")   -- Copy into global buffer
 
 vnoremap("<leader>d", "\"_d")   -- Delete without affecting the unamged buffer
 nnoremap("<leader>d", "\"_d")   -- Delete without affecting the unamed buffer
+
+xnoremap("<leader>p", "\"_dP")  -- Delete without affecting buffer then paste
 
 vnoremap("x", "\"_x")           -- Delete without affecting the unamged buffer
 nnoremap("x", "\"_x")           -- Delete without affecting the unamed buffer
