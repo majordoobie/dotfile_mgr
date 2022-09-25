@@ -121,7 +121,7 @@ alias code='cd ~/code'
 alias scratch='cd ~/code/scratch_pad'
 alias kill_logi='python3 ~/code/mac_scripts/restart_logi.py'
 alias sync_dotfiles='zsh ~/code/dotfiles/sync_dotfiles.sh'
-alias lines_of_code='find . -type f \( -iname "*.c" -or -iname "*.cpp" -or -iname "*.h" -or -iname "*.cmake" \) ! -path "./cmake-*" | xargs wc -l'
+alias lines_of_code='find . -type f \( -iname "*.c" -or -iname "*.cpp" -or -iname "*.h" -or -iname "*.cmake" -or -iname "*.py" -or -iname "CMakeLists.txt"\) ! -path "./cmake-*" | xargs wc -l'
 
 export EDITOR='nvim'
 export HOME_KEY='/Users/anker/Library/CloudStorage/OneDrive-Personal/keys'
