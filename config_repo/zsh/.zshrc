@@ -1,3 +1,5 @@
+ source ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+ 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -16,6 +18,7 @@ export ZSH="/Users/anker/.oh-my-zsh"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="powerlevel10k/powerlevel10k"
+#ZSH_THEME="robbyrussell"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -78,16 +81,22 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-	git
-    macos
+    # Build in
+	sudo
+	copyfile
 	docker
+	macos
+	jsontools
+	fzf
+	vi-mode
+
+	# Third party
 	zsh-autosuggestions
-	zsh-completions
 	zsh-syntax-highlighting
-    fd
-    vi-mode
+    zsh-autocomplete
 )
 
+#fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -117,16 +126,18 @@ VI_MODE_SET_CURSOR=true
 
 alias ll='ls -lAh --color=auto'
 alias vim='nvim'
-alias code='cd ~/code'
+alias code='cd ~/OneDrive/Code'
 alias scratch='cd ~/code/scratch_pad'
 alias kill_logi='python3 ~/code/mac_scripts/restart_logi.py'
-alias sync_dotfiles='zsh ~/code/dotfiles/sync_dotfiles.sh'
-alias lines_of_code='find . -type f \( -iname "*.c" -or -iname "*.cpp" -or -iname "*.h" -or -iname "*.cmake" -or -iname "*.py" -or -iname "CMakeLists.txt"\) ! -path "./cmake-*" | xargs wc -l'
+alias sync_dotfiles='zsh ~/OneDrive/Code/active_projects/dotfiles/sync_dotfiles.sh'
+alias lines_of_code='find . -type f \( -iname "*.c" -or -iname "*.cpp" -or -iname "*.h" -or -iname "*.cmake" -or -iname "*.py" -or -iname "CMakeLists.txt" \) ! -path "./cmake-*" ! -path "./.venv/*" ! -path "./venv/*"  ! -path "./build/*" | xargs wc -l'
 
 export EDITOR='nvim'
-export HOME_KEY='/Users/anker/Library/CloudStorage/OneDrive-Personal/keys'
+export HOME_KEY='/Users/anker/OneDrive/Code/keys'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

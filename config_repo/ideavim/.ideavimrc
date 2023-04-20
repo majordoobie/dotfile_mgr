@@ -114,7 +114,7 @@ map <a-h> <Action>(StretchSplitToLeft)
 map <a-l> <Action>(StretchSplitToRight)
 
 " Closing Panes "close close" and "close all"
-map <Leader>qq <Action>(CloseContent)
+map <Leader>x <Action>(CloseContent)
 map <Leader>qa <Action>(CloseAllEditors)
 
 " Sets hjkl as pane movement keys
